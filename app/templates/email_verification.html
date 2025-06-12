@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+</head>
+<body>
+    <p>Hello {{ username }},</p>
+    <p>Thank you for registering with Contacts App. Please click the link below to verify your email address:</p>
+    <p><a href="{{ host }}api/auth/confirm_email/{{ token }}">Verify Email</a></p>
+    <p>If you did not register for this service, please ignore this email.</p>
+    <p>Regards,<br>Contacts App Team</p>
+</body>
+</html>

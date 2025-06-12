@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+python-dotenv
+pydantic[email]
+fastapi-mail
+python-jose[cryptography]
+passlib[bcrypt]
+fastapi-limiter
+redis
+cloudinary
+python-multipart
+Sphinx
+sphinx_rtd_theme
+sphinx-autodoc-typehints

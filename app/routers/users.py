@@ -1,3 +1,9 @@
+# app/routers/users.py
+"""
+Модуль для управління операціями, пов'язаними з користувачами,
+такими як оновлення аватара.
+"""
+
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.orm import Session
 from app import deps, crud, models, schemas
@@ -31,6 +37,25 @@ async def update_avatar(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(deps.get_db)
 ):
+    """
+    Оновлює аватар поточного користувача.
+
+    Завантажує зображення на Cloudinary та зберігає URL аватара в базі даних користувача.
+
+    Args:
+        file (UploadFile): Файл зображення для завантаження.
+        current_user (models.User): Поточний аутентифікований користувач.
+        db (Session): Сесія бази даних.
+
+    Raises:
+        HTTPException:
+            - 404 NOT_FOUND: Якщо користувача не знайдено в базі даних.
+            - 500 INTERNAL_SERVER_ERROR: Якщо сталася помилка під час завантаження на Cloudinary
+                                         або інша внутрішня помилка сервера.
+
+    Returns:
+        schemas.UserOut: Оновлений об'єкт користувача з новим URL аватара.
+    """
     print(f"Attempting to upload avatar for user ID: {current_user.id}")
     try:
         r = cloudinary.uploader.upload(file.file, folder="avatars", public_id=f"avatar_{current_user.id}", overwrite=True)

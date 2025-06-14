@@ -1,4 +1,3 @@
-# app/routers/auth.py
 """
 Модуль для управління аутентифікацією та авторизацією користувачів.
 
@@ -18,15 +17,11 @@ from app.auth import (
     create_email_verification_token, decode_email_verification_token,
     verify_password, create_access_token, get_current_user,
     get_password_hash, create_password_reset_token, decode_password_reset_token,
-    get_redis_client, USER_CACHE_EXPIRE_MINUTES  # Імпортуємо get_redis_client та USER_CACHE_EXPIRE_MINUTES
+    get_redis_client, USER_CACHE_EXPIRE_MINUTES
 )
-from app.email import send_email  # Переконайтеся, що app.email існує і send_email реалізовано
+from app.email import send_email
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
-
-# !!! ЦЕЙ РЯДОК ПОТРІБНО ВИДАЛИТИ !!!
-# from app.routers.auth import router # Імпортуємо router з app.routers.auth
-
 
 @router.post("/signup", response_model=schemas.UserOut, status_code=status.HTTP_201_CREATED)
 async def signup(body: schemas.UserCreate, background_tasks: BackgroundTasks, request: Request,
@@ -55,10 +50,8 @@ async def signup(body: schemas.UserCreate, background_tasks: BackgroundTasks, re
     if new_user is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not create user")
 
-    # Створення та відправка токена для підтвердження email
     token_verification = create_email_verification_token({"sub": new_user.email})
 
-    # Формування базового URL для посилання підтвердження
     base_url = str(request.url).replace(request.url.path, "")
 
     background_tasks.add_task(
@@ -135,13 +128,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # При успішному вході, оновлюємо кеш користувача
     user_dict = {
         "id": user.id,
         "email": user.email,
         "confirmed": user.confirmed,
         "avatar_url": user.avatar_url,
-        "role": user.role  # Додаємо роль
+        "role": user.role
     }
     await r.setex(f"user:{user.email}", USER_CACHE_EXPIRE_MINUTES * 60, json.dumps(user_dict))
 
@@ -205,7 +197,6 @@ async def request_reset_password(
 
     token_reset = create_password_reset_token({"sub": user.email})
 
-    # Формування базового URL для посилання скидання пароля
     base_url = str(request.url).replace(request.url.path, "")
 
     background_tasks.add_task(
@@ -222,9 +213,9 @@ async def request_reset_password(
 @router.post("/reset_password/{token}", status_code=status.HTTP_200_OK)
 async def reset_password(
         token: str,
-        body: schemas.UserLogin,  # Використовуємо UserLogin для отримання нового пароля
+        body: schemas.UserLogin,
         db: Session = Depends(deps.get_db),
-        r: redis.Redis = Depends(get_redis_client)  # Додаємо Redis для очищення кешу
+        r: redis.Redis = Depends(get_redis_client)
 ):
     """
     Скидає пароль користувача за допомогою токена скидання пароля.
@@ -256,12 +247,10 @@ async def reset_password(
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    # Хешуємо новий пароль
     user.hashed_password = get_password_hash(body.password)
     db.commit()
     db.refresh(user)
 
-    # Очищаємо кеш користувача в Redis після зміни пароля
     await r.delete(f"user:{user.email}")
 
     return {"message": "Password has been successfully reset."}

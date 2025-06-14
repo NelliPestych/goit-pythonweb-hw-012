@@ -1,56 +1,62 @@
 # app/crud.py
 """
-Модуль, що містить функції для взаємодії з базою даних (CRUD операції)
-для моделей User та Contact.
+Модуль, що містить функції для виконання CRUD-операцій
+(Create, Read, Update, Delete) з даними в базі даних.
 """
 
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, func
-from datetime import datetime, timedelta
+from sqlalchemy import and_
 from app import models, schemas
-from app.auth import get_password_hash
+from app.auth import get_password_hash  # Імпортуємо функцію хешування пароля
+from datetime import date, datetime, timedelta
+from typing import List, Optional
 
-def get_user_by_email(db: Session, email: str):
+# Імпортуємо UserRole з models, оскільки вона там визначена як Enum
+from app.models import UserRole
+
+
+def create_user(db: Session, user: schemas.UserCreate) -> models.User:
     """
-    Отримує користувача з бази даних за його електронною поштою.
+    Створює нового користувача в базі даних.
+
+    Args:
+        db (Session): Сесія бази даних.
+        user (schemas.UserCreate): Схема даних нового користувача.
+
+    Returns:
+        models.User: Створений об'єкт користувача.
+    """
+    hashed_password = get_password_hash(user.password)
+    # Присвоюємо роль за замовчуванням при створенні користувача
+    db_user = models.User(email=user.email, hashed_password=hashed_password, role=UserRole.user)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
+    """
+    Отримує користувача з бази даних за електронною поштою.
 
     Args:
         db (Session): Сесія бази даних.
         email (str): Електронна пошта користувача.
 
     Returns:
-        models.User | None: Об'єкт користувача, якщо знайдено, інакше None.
+        Optional[models.User]: Об'єкт користувача або None, якщо користувача не знайдено.
     """
     return db.query(models.User).filter(models.User.email == email).first()
 
-def create_user(db: Session, user: schemas.UserCreate):
-    """
-    Створює нового користувача в базі даних.
 
-    Пароль користувача хешується перед збереженням.
-
-    Args:
-        db (Session): Сесія бази даних.
-        user (schemas.UserCreate): Схема Pydantic з даними для створення користувача.
-
-    Returns:
-        models.User: Об'єкт щойно створеного користувача.
-    """
-    hashed_password = get_password_hash(user.password)
-    db_user = models.User(email=user.email, hashed_password=hashed_password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-def update_user_confirmation(db: Session, user: models.User, confirmed: bool):
+def update_user_confirmation(db: Session, user: models.User, confirmed: bool) -> models.User:
     """
     Оновлює статус підтвердження електронної пошти користувача.
 
     Args:
         db (Session): Сесія бази даних.
-        user (models.User): Об'єкт користувача, який потрібно оновити.
-        confirmed (bool): Новий статус підтвердження (True/False).
+        user (models.User): Об'єкт користувача.
+        confirmed (bool): Новий статус підтвердження.
 
     Returns:
         models.User: Оновлений об'єкт користувача.
@@ -60,162 +66,181 @@ def update_user_confirmation(db: Session, user: models.User, confirmed: bool):
     db.refresh(user)
     return user
 
-def create_contact(db: Session, contact: schemas.ContactCreate, user_id: int):
+
+def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> Optional[models.User]:
     """
-    Створює новий контакт у базі даних для вказаного користувача.
+    Оновлює URL аватара користувача.
 
     Args:
         db (Session): Сесія бази даних.
-        contact (schemas.ContactCreate): Схема Pydantic з даними для створення контакту.
-        user_id (int): ID користувача, який створює контакт.
+        user_id (int): ID користувача.
+        avatar_url (str): Новий URL аватара.
 
     Returns:
-        models.Contact: Об'єкт щойно створеного контакту.
+        Optional[models.User]: Оновлений об'єкт користувача або None, якщо користувача не знайдено.
     """
-    db_contact = models.Contact(**contact.dict(), user_id=user_id)
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        user.avatar_url = avatar_url
+        db.commit()
+        db.refresh(user)
+    return user
+
+
+def create_contact(db: Session, contact: schemas.ContactCreate, user_id: int) -> models.Contact:
+    """
+    Створює новий контакт для вказаного користувача.
+
+    Args:
+        db (Session): Сесія бази даних.
+        contact (schemas.ContactCreate): Схема даних нового контакту.
+        user_id (int): ID користувача-власника.
+
+    Returns:
+        models.Contact: Створений об'єкт контакту.
+    """
+    db_contact = models.Contact(**contact.model_dump(), user_id=user_id)  # Використовуємо .model_dump()
     db.add(db_contact)
     db.commit()
     db.refresh(db_contact)
     return db_contact
 
-def get_contacts(db: Session, skip: int = 0, limit: int = 100, user_id: int = None):
-    """
-    Отримує список контактів з бази даних.
 
-    Забезпечує пагінацію та фільтрацію за ID користувача, якщо він вказаний.
+def get_contacts(db: Session, user_id: Optional[int] = None, skip: int = 0, limit: int = 100) -> List[models.Contact]:
+    """
+    Отримує список контактів.
 
     Args:
         db (Session): Сесія бази даних.
-        skip (int): Кількість записів, які потрібно пропустити.
+        user_id (Optional[int]): ID користувача, якщо потрібно отримати контакти конкретного користувача.
+                                 Якщо None, повертає всі контакти (використовується для тестів/адміна).
+        skip (int): Кількість записів для пропуску.
         limit (int): Максимальна кількість записів для повернення.
-        user_id (int | None): ID користувача, чиї контакти потрібно отримати. Якщо None, повертає всі контакти.
 
     Returns:
         List[models.Contact]: Список об'єктів контактів.
     """
     query = db.query(models.Contact)
-    if user_id is not None:
+    if user_id:
         query = query.filter(models.Contact.user_id == user_id)
     return query.offset(skip).limit(limit).all()
 
-def get_contact(db: Session, contact_id: int, user_id: int = None):
-    """
-    Отримує контакт за його ID.
 
-    Може фільтрувати за ID користувача для забезпечення належності.
+def get_contact(db: Session, contact_id: int, user_id: int) -> Optional[models.Contact]:
+    """
+    Отримує один контакт за його ID та ID користувача.
 
     Args:
         db (Session): Сесія бази даних.
         contact_id (int): ID контакту.
-        user_id (int | None): ID користувача, якому належить контакт.
+        user_id (int): ID користувача-власника.
 
     Returns:
-        models.Contact | None: Об'єкт контакту, якщо знайдено та належить користувачу, інакше None.
+        Optional[models.Contact]: Об'єкт контакту або None, якщо контакт не знайдено
+                                 або він не належить цьому користувачу.
     """
-    query = db.query(models.Contact).filter(models.Contact.id == contact_id)
-    if user_id is not None:
-        query = query.filter(models.Contact.user_id == user_id)
-    return query.first()
+    return db.query(models.Contact).filter(
+        and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)
+    ).first()
 
-def update_contact(db: Session, contact_id: int, updates: schemas.ContactUpdate, user_id: int = None):
+
+def update_contact(db: Session, contact_id: int, contact: schemas.ContactUpdate, user_id: int) -> Optional[
+    models.Contact]:
     """
-    Оновлює існуючий контакт у базі даних.
+    Оновлює існуючий контакт.
 
     Args:
         db (Session): Сесія бази даних.
         contact_id (int): ID контакту, який потрібно оновити.
-        updates (schemas.ContactUpdate): Схема Pydantic з полями, які потрібно оновити.
-        user_id (int | None): ID користувача, якому належить контакт.
+        contact (schemas.ContactUpdate): Схема даних для оновлення контакту.
+        user_id (int): ID користувача-власника.
 
     Returns:
-        models.Contact | None: Оновлений об'єкт контакту, якщо знайдено та оновлено, інакше None.
+        Optional[models.Contact]: Оновлений об'єкт контакту або None, якщо контакт не знайдено
+                                 або він не належить цьому користувачу.
     """
-    db_contact = get_contact(db, contact_id, user_id=user_id)
+    db_contact = db.query(models.Contact).filter(
+        and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)
+    ).first()
     if db_contact:
-        if user_id is not None and db_contact.user_id != user_id:
-            return None # Користувач не має дозволу на оновлення цього контакту
-        for field, value in updates.dict(exclude_unset=True).items():
-            setattr(db_contact, field, value)
+        # Оновлюємо тільки ті поля, які були надані в схемі оновлення
+        for key, value in contact.model_dump(exclude_unset=True).items():  # Використовуємо exclude_unset=True
+            setattr(db_contact, key, value)
         db.commit()
         db.refresh(db_contact)
     return db_contact
 
-def delete_contact(db: Session, contact_id: int, user_id: int = None):
+
+def delete_contact(db: Session, contact_id: int, user_id: int) -> Optional[models.Contact]:
     """
-    Видаляє контакт з бази даних.
+    Видаляє контакт.
 
     Args:
         db (Session): Сесія бази даних.
         contact_id (int): ID контакту, який потрібно видалити.
-        user_id (int | None): ID користувача, якому належить контакт.
+        user_id (int): ID користувача-власника.
 
     Returns:
-        models.Contact | None: Видалений об'єкт контакту, якщо знайдено та видалено, інакше None.
+        Optional[models.Contact]: Видалений об'єкт контакту або None, якщо контакт не знайдено
+                                 або він не належить цьому користувачу.
     """
-    db_contact = get_contact(db, contact_id, user_id=user_id)
+    db_contact = db.query(models.Contact).filter(
+        and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)
+    ).first()
     if db_contact:
-        if user_id is not None and db_contact.user_id != user_id:
-            return None # Користувач не має дозволу на видалення цього контакту
         db.delete(db_contact)
         db.commit()
     return db_contact
 
-def search_contacts(db: Session, query: str, user_id: int = None):
-    """
-    Шукає контакти за частиною імені, прізвища або електронної пошти.
 
-    Пошук не чутливий до регістру.
+def search_contacts(db: Session, query: str, user_id: int) -> List[models.Contact]:
+    """
+    Шукає контакти за ім'ям, прізвищем або електронною поштою.
 
     Args:
         db (Session): Сесія бази даних.
-        query (str): Рядок пошукового запиту.
-        user_id (int | None): ID користувача, чиї контакти потрібно шукати.
+        query (str): Рядок пошуку.
+        user_id (int): ID користувача-власника.
 
     Returns:
         List[models.Contact]: Список знайдених контактів.
     """
-    filters = or_(
-        models.Contact.first_name.ilike(f"%{query}%"),
-        models.Contact.last_name.ilike(f"%{query}%"),
-        models.Contact.email.ilike(f"%{query}%")
-    )
-    search_query = db.query(models.Contact).filter(filters)
-    if user_id is not None:
-        search_query = search_query.filter(models.Contact.user_id == user_id)
-    return search_query.all()
+    search_pattern = f"%{query.lower()}%"
+    return db.query(models.Contact).filter(
+        and_(
+            models.Contact.user_id == user_id,
+            (
+                    models.Contact.first_name.ilike(search_pattern) |
+                    models.Contact.last_name.ilike(search_pattern) |
+                    models.Contact.email.ilike(search_pattern)
+            )
+        )
+    ).all()
 
-def upcoming_birthdays(db: Session, user_id: int = None):
+
+def upcoming_birthdays(db: Session, user_id: int) -> List[models.Contact]:
     """
-    Знаходить контакти з майбутніми днями народження (протягом наступних 7 днів).
-
-    Дні народження порівнюються лише за місяцем та днем, ігноруючи рік народження.
-    Враховує перехід через кінець року (грудень/січень).
+    Отримує список контактів з днями народження, що наближаються (наступні 7 днів).
 
     Args:
         db (Session): Сесія бази даних.
-        user_id (int | None): ID користувача, чиї контакти потрібно перевіряти.
+        user_id (int): ID користувача-власника.
 
     Returns:
-        List[models.Contact]: Список контактів з найближчими днями народження.
+        List[models.Contact]: Список контактів з майбутніми днями народження.
     """
-    today = datetime.today().date()
-    upcoming = today + timedelta(days=7)
+    today = date.today()
+    upcoming_contacts = []
 
-    query = db.query(models.Contact)
-    if user_id is not None:
-        query = query.filter(models.Contact.user_id == user_id)
-    contacts = query.all()
-    result = []
+    contacts = db.query(models.Contact).filter(models.Contact.user_id == user_id).all()
 
     for contact in contacts:
-        # Замінюємо рік народження контакту на поточний рік, щоб порівнювати місяць та день
-        bday_this_year = contact.birthday.replace(year=today.year)
-        if today <= bday_this_year <= upcoming:
-            result.append(contact)
-        # Обробка днів народження, що припадають на наступний рік, якщо поточний період охоплює кінець року
-        elif today.month == 12 and (bday_this_year.month == 1 or bday_this_year.month == 2):
-            bday_next_year = contact.birthday.replace(year=today.year + 1)
-            if today <= bday_next_year <= upcoming:
-                result.append(contact)
+        birthday_this_year = contact.birthday.replace(year=today.year)
+        if birthday_this_year < today:
+            birthday_this_year = contact.birthday.replace(year=today.year + 1)
 
-    return result
+        delta = birthday_this_year - today
+        if 0 <= delta.days <= 7:
+            upcoming_contacts.append(contact)
+
+    return upcoming_contacts

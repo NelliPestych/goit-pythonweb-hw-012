@@ -15,12 +15,12 @@ from fastapi_limiter import FastAPILimiter
 from redis.asyncio import Redis
 from dotenv import load_dotenv
 import os
+# import time # Час більше не потрібен для логіки retry тут
 from app.routers import contacts, auth, users
-from app.database import engine, Base
+# from app.database import engine, Base, SessionLocal, create_db_and_tables # create_db_and_tables більше не викликається тут
+from app.database import SessionLocal # SessionLocal все ще потрібен для залежностей
 from fastapi.middleware.cors import CORSMiddleware
-
-# Створюємо всі таблиці в базі даних, якщо вони ще не існують.
-Base.metadata.create_all(bind=engine)
+# from sqlalchemy.exc import OperationalError # OperationalError більше не потрібен для логіки retry тут
 
 # Завантажуємо змінні середовища з файлу .env
 load_dotenv()
@@ -49,9 +49,14 @@ async def startup():
 
     Ініціалізує з'єднання з Redis для використання FastAPILimiter.
     Змінні `REDIS_HOST` та `REDIS_PORT` зчитуються зі змінних середовища.
+    Створення таблиць бази даних тепер відбувається перед запуском Uvicorn.
     """
-    redis = Redis(host=os.getenv("REDIS_HOST", "localhost"), port=int(os.getenv("REDIS_PORT", 6379)), db=0, encoding="utf-8", decode_responses=True)
-    await FastAPILimiter.init(redis)
+    redis_host = os.getenv("REDIS_HOST", "localhost")
+    redis_port = int(os.getenv("REDIS_PORT", 6379))
+    redis_client = Redis(host=redis_host, port=redis_port, db=0, encoding="utf-8", decode_responses=True)
+    await FastAPILimiter.init(redis_client)
+    print("FastAPILimiter initialized with Redis.") # Додано для ясності в логах
+
 
 # Додаємо простий кореневий маршрут для тестування
 @app.get("/")
@@ -61,9 +66,10 @@ def read_root():
 
     Повертає вітальне повідомлення.
     """
-    return {"message": "Welcome to the Contacts API!"} # Змінено на більш інформативне повідомлення
+    return {"message": "Welcome to the Contacts API!"}
 
 # Включаємо маршрути з інших модулів
 app.include_router(contacts.router, prefix="/contacts", tags=["Contacts"])
 app.include_router(auth.router, prefix="/api", tags=["Auth"])
 app.include_router(users.router, prefix="/api", tags=["Users"])
+

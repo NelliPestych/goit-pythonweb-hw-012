@@ -472,7 +472,15 @@ async def request_reset_password(
     base_url = str(request.url).replace(request.url.path, "")
     reset_link = f"{base_url}/api/auth/reset_password/{token_reset}"
 
-    background_tasks.add_task(send_email, user.email, user.email, reset_link, subject="Password Reset Request")
+    # background_tasks.add_task(send_email, user.email, user.email, reset_link, subject="Password Reset Request")
+    background_tasks.add_task(
+        send_email,
+        email=user.email,
+        username=user.email,
+        host=str(request.base_url),
+        token=token_reset,
+        subject="Password Reset Request"
+    )
     return {"message": "If a user with that email exists and is confirmed, a password reset link has been sent."}
 
 

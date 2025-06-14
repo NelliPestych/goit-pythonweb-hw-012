@@ -14,12 +14,11 @@ conf = ConnectionConfig(
     MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
     MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
     MAIL_FROM=os.getenv("MAIL_FROM"),
-    # Налаштування для Meta.ua SMTP з SSL/TLS
-    MAIL_PORT=int(os.getenv("MAIL_PORT", 465)), # Порт 465 для SSL
+    MAIL_PORT=int(os.getenv("MAIL_PORT", 465)),
     MAIL_SERVER=os.getenv("MAIL_SERVER"),
     MAIL_FROM_NAME="Contacts App",
-    MAIL_STARTTLS=False, # Вимикаємо STARTTLS
-    MAIL_SSL_TLS=True,  # Вмикаємо явний SSL/TLS
+    MAIL_STARTTLS=False,
+    MAIL_SSL_TLS=True,
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=True,
     TEMPLATE_FOLDER=Path(__file__).parent / 'templates',
@@ -34,6 +33,7 @@ async def send_email(
 ):
     """
     Відправляє електронний лист для підтвердження email або скидання пароля.
+    У тестовому режимі виводить посилання для підтвердження/скидання в логи.
 
     Args:
         email (EmailStr): Адреса електронної пошти одержувача.
@@ -43,6 +43,7 @@ async def send_email(
         subject (Optional[str]): Тема електронного листа. За замовчуванням "Confirm your email for Contacts App".
     """
     try:
+        # Активовано блок FastMail для відправки реальних листів
         message = MessageSchema(
             subject=subject,
             recipients=[email],
@@ -52,12 +53,14 @@ async def send_email(
 
         fm = FastMail(conf)
         await fm.send_message(message, template_name="email_verification.html")
-        # Додаємо вивід посилання в термінал для налагодження
-        # Це допоможе вам перевірити, чи правильно генеруються посилання
-        print(f"DEBUG: Email sent to {email} with subject '{subject}' and link: {host}/api/auth/confirm_email/{token}")
+
+        # Додано логування посилання в термінал для обох випадків
+        if subject == "Password Reset Request":
+            print(f"DEBUG: Password Reset Email sent to {email} with link: {host}/api/auth/reset_password/{token}")
+        else:
+            print(f"DEBUG: Email sent to {email} with subject '{subject}' and link: {host}/api/auth/confirm_email/{token}")
+
     except Exception as e:
         print(f"Error sending email: {e}")
-        # Якщо ви хочете, щоб API-виклик завершувався з помилкою 500,
-        # якщо email не надіслано, то не використовуйте BackgroundTasks для send_email.
-        # Але для цього сценарію це правильна поведінка.
-        # raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error sending email: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error sending email: {e}")
+

@@ -1,8 +1,14 @@
-from typing import List, Optional
+# app/email.py
+"""
+Модуль для надсилання електронних листів.
+Використовує FastAPI-Mail для конфігурації SMTP та шаблонів.
+"""
+
+from typing import Optional
 from pathlib import Path
 
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-from fastapi import BackgroundTasks, HTTPException, status
+from fastapi import HTTPException, status, Request # Import Request from fastapi
 from pydantic import EmailStr
 
 from dotenv import load_dotenv
@@ -17,7 +23,7 @@ conf = ConnectionConfig(
     MAIL_PORT=int(os.getenv("MAIL_PORT", 465)),
     MAIL_SERVER=os.getenv("MAIL_SERVER"),
     MAIL_FROM_NAME="Contacts App",
-    MAIL_STARTTLS=False,
+    MAIL_STARTTLS=False, # Changed to False for better compatibility with some SMTPs, or based on your setup
     MAIL_SSL_TLS=True,
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=True,
@@ -25,34 +31,59 @@ conf = ConnectionConfig(
 )
 
 async def send_email(
-    email: EmailStr,
-    username: str,
-    host: str,
-    token: str,
-    # Додаємо необов'язковий аргумент subject
-    subject: Optional[str] = "Confirm your email for Contacts App" # Значення за замовчуванням
+    email_to: EmailStr,     # Email одержувача
+    username: str,          # Ім'я користувача для шаблону
+    token: str,             # Токен для підтвердження/скидання
+    request: Request,       # Об'єкт запиту для генерації URL
+    reset_password: bool = False # Прапорець для визначення типу листа
 ):
     """
-    Відправляє електронний лист для підтвердження email або скидання пароля.
+    Відправляє email з підтвердженням або скиданням пароля.
 
     Args:
-        email (EmailStr): Адреса електронної пошти одержувача.
-        username (str): Ім'я користувача (зазвичай, також email).
-        host (str): Базовий URL застосунку.
-        token (str): Токен верифікації або скидання пароля.
-        subject (Optional[str]): Тема електронного листа. За замовчуванням "Confirm your email for Contacts App".
+        email_to (EmailStr): email одержувача.
+        username (str): Ім'я користувача для використання в шаблоні листа.
+        token (str): Токен для підтвердження email або скидання пароля.
+        request (Request): Об'єкт запиту FastAPI для побудови URL.
+        reset_password (bool): True, якщо це лист для скидання пароля, False для підтвердження.
     """
     try:
+        # Визначаємо тему та назву шаблону в залежності від типу листа
+        if reset_password:
+            subject = "Password Reset Request for Contacts App"
+            # Для скидання пароля посилання йде на /api/auth/reset_password/{token}
+            # url_for приймає 'name' роуту, яке за замовчуванням є назвою функції
+            link = request.url_for("reset_password", token=token)
+            template_name = "password_reset.html" # Припускаємо, що у вас є цей шаблон
+        else:
+            subject = "Confirm your email for Contacts App"
+            # Для підтвердження email посилання йде на /api/auth/confirm_email/{token}
+            link = request.url_for("confirm_email", token=token)
+            template_name = "email_verification.html" # Припускаємо, що у вас є цей шаблон
+
+        # Дані, які будуть передані в шаблон листа
+        email_data = {
+            "username": username,
+            "link": str(link) # Перетворюємо URL в рядок для шаблону
+        }
+
         message = MessageSchema(
-            subject=subject, # Тепер використовуємо переданий аргумент subject
-            recipients=[email],
-            template_body={"host": host, "username": username, "token": token},
+            subject=subject,
+            recipients=[email_to],
+            template_body=email_data, # Передаємо словник з даними для шаблону
             subtype=MessageType.html,
         )
 
         fm = FastMail(conf)
-        await fm.send_message(message, template_name="email_verification.html") # Використовуємо той самий шаблон
+        await fm.send_message(message, template_name=template_name)
+
+        # Додаємо вивід посилання в термінал для налагодження
+        print(f"DEBUG: Email sent to {email_to} with link: {link} (Subject: {subject})")
+
     except Exception as e:
-        print(f"Error sending email: {e}")
-        # Залишаємо raise HTTPException тут, щоб FastAPI правильно обробляв помилки відправки
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error sending email: {e}")
+        # Логуємо помилку відправки email, але не підвищуємо HTTPException,
+        # оскільки це фонова задача, і основний HTTP-запит вже може бути завершений.
+        print(f"ERROR: Failed to send email to {email_to}. Details: {e}")
+        # Якщо ви хочете, щоб API-виклик завершувався з помилкою 500,
+        # якщо email не надіслано, то не використовуйте BackgroundTasks для send_email.
+        # Але для цього сценарію це правильна поведінка.

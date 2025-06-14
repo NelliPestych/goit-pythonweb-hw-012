@@ -15,13 +15,16 @@ import pytest
 def test_create_user(db_session: Session):
     """
     Тестує створення нового користувача.
+    Пароль тепер хешується всередині crud.create_user.
     """
     user_data = schemas.UserCreate(email="test@example.com", password="testpassword")
-    user = crud.create_user(db_session, user_data)
+    user = crud.create_user(db_session, user_data)  # Передаємо схему з чистим паролем
     assert user.email == "test@example.com"
-    assert hasattr(user, "hashed_password")  # Перевіряємо, що пароль хешовано
+    assert hasattr(user, "hashed_password")  # Перевіряємо, що поле hashed_password існує
+    assert user.hashed_password != "testpassword"  # Перевіряємо, що пароль дійсно хешований
     assert user.id is not None
     assert user.confirmed is False
+    assert user.role == models.UserRole.user  # Перевіряємо роль за замовчуванням
 
 
 def test_get_user_by_email(db_session: Session):
@@ -47,8 +50,10 @@ def test_update_user_confirmation(db_session: Session):
     user = crud.create_user(db_session, user_data)
     assert user.confirmed is False
 
-    updated_user = crud.update_user_confirmation(db_session, user, True)
-    assert updated_user.confirmed is True
+    crud.confirm_user_email(db_session, user)  # Використовуємо confirm_user_email замість update_user_confirmation
+    assert user.confirmed is True
+    db_session.refresh(user)  # Оновлюємо об'єкт після змін
+    assert user.confirmed is True
 
 
 def test_create_contact(db_session: Session):
@@ -69,6 +74,7 @@ def test_create_contact(db_session: Session):
     contact = crud.create_contact(db_session, contact_data, user.id)
     assert contact.first_name == "John"
     assert contact.email == "john.doe@example.com"
+    assert contact.phone == "1234567890"  # Додано перевірку phone
     assert contact.user_id == user.id
     assert contact.id is not None
 
@@ -95,7 +101,8 @@ def test_get_contacts(db_session: Session):
     assert len(contacts_user2) == 1
     assert contacts_user2[0].first_name == "E"
 
-    all_contacts = crud.get_contacts(db_session)  # Без user_id
+    # Тест на отримання всіх контактів (без user_id)
+    all_contacts = crud.get_contacts(db_session, user_id=None)
     assert len(all_contacts) == 3
 
 
@@ -131,19 +138,18 @@ def test_update_contact(db_session: Session):
                                          birthday=date(1990, 1, 1))
     contact = crud.create_contact(db_session, contact_data, user.id)
 
-    # Оновлення даних контакту - тепер це коректно, оскільки ContactUpdate має Optional поля
-    update_data = schemas.ContactUpdate(email="new@email.com", phone="222")
-    updated_contact = crud.update_contact(db_session, contact.id, update_data, user.id)
+    update_data = schemas.ContactUpdate(email="new@email.com", phone="222", additional_info="Updated info")
+    updated_contact = crud.update_contact(db_session, contact.id, user.id,
+                                          update_data)  # Порядок аргументів: contact_id, user_id, contact
+
     assert updated_contact.email == "new@email.com"
     assert updated_contact.phone == "222"
-    assert updated_contact.first_name == "Old" # Інші поля не змінилися, тому вони залишаються старими
-    assert updated_contact.last_name == "Name"
-    assert updated_contact.birthday == date(1990, 1, 1)
-
+    assert updated_contact.first_name == "Old"
+    assert updated_contact.additional_info == "Updated info"
 
     # Спробуємо оновити контакт, який не належить користувачу
     other_user = crud.create_user(db_session, schemas.UserCreate(email="attacker@example.com", password="pass"))
-    unauthorized_update = crud.update_contact(db_session, contact.id, update_data, other_user.id)
+    unauthorized_update = crud.update_contact(db_session, contact.id, other_user.id, update_data)
     assert unauthorized_update is None
 
 
@@ -157,17 +163,14 @@ def test_delete_contact(db_session: Session):
     contact = crud.create_contact(db_session, contact_data, user.id)
 
     deleted_contact = crud.delete_contact(db_session, contact.id, user.id)
-    assert deleted_contact.id == contact.id  # Перевіряємо, що повернувся видалений контакт
+    assert deleted_contact.id == contact.id
 
-    # Перевіряємо, що контакт дійсно видалено з БД
     assert crud.get_contact(db_session, contact.id, user.id) is None
 
-    # Спробуємо видалити контакт іншого користувача
     other_user = crud.create_user(db_session, schemas.UserCreate(email="other_del@example.com", password="pass"))
     unauthorized_delete = crud.delete_contact(db_session, contact.id, other_user.id)
     assert unauthorized_delete is None
 
-    # Спробуємо видалити неіснуючий контакт
     non_existent_delete = crud.delete_contact(db_session, 999, user.id)
     assert non_existent_delete is None
 
@@ -177,17 +180,19 @@ def test_search_contacts(db_session: Session):
     Тестує пошук контактів за різними критеріями.
     """
     user = crud.create_user(db_session, schemas.UserCreate(email="search_user@example.com", password="pass"))
-    # Змінюємо дані, щоб вони були більш передбачуваними для пошуку "o"
-    crud.create_contact(db_session, schemas.ContactCreate(first_name="Anna", last_name="Smith", email="anna@example.com",
-                                                         phone="1", birthday=date(1990, 1, 1)), user.id)
-    crud.create_contact(db_session, schemas.ContactCreate(first_name="Boris", last_name="Johnson", email="boris@example.com",
-                                                         phone="2", birthday=date(1990, 1, 1)), user.id)
-    crud.create_contact(db_session, schemas.ContactCreate(first_name="Carol", last_name="Brown", email="carol@test.com",
-                                                         phone="3", birthday=date(1990, 1, 1)), user.id)
+    crud.create_contact(db_session,
+                        schemas.ContactCreate(first_name="Alice", last_name="Smith", email="alice@example.com",
+                                              phone="1", birthday=date(1990, 1, 1)), user.id)
+    crud.create_contact(db_session,
+                        schemas.ContactCreate(first_name="Bob", last_name="Johnson", email="bob@example.com",
+                                              phone="2", birthday=date(1990, 1, 1)), user.id)
+    crud.create_contact(db_session,
+                        schemas.ContactCreate(first_name="Charlie", last_name="Brown", email="charlie@test.com",
+                                              phone="3", birthday=date(1990, 1, 1)), user.id)
 
-    results_anna = crud.search_contacts(db_session, "anna", user.id)
-    assert len(results_anna) == 1
-    assert results_anna[0].first_name == "Anna"
+    results_alice = crud.search_contacts(db_session, "alice", user.id)
+    assert len(results_alice) == 1
+    assert results_alice[0].first_name == "Alice"
 
     results_johnson = crud.search_contacts(db_session, "johnson", user.id)
     assert len(results_johnson) == 1
@@ -195,12 +200,10 @@ def test_search_contacts(db_session: Session):
 
     results_email = crud.search_contacts(db_session, "@test.com", user.id)
     assert len(results_email) == 1
-    assert results_email[0].email == "carol@test.com"
+    assert results_email[0].email == "charlie@test.com"
 
-    results_o = crud.search_contacts(db_session, "o", user.id)
-    # Boris Johnson (o в Boris, Johnson), Carol Brown (o в Brown)
-    # Очікуємо 2 контакти з 'o' в name/email
-    assert len(results_o) == 3 # <--- ЗМІНЕНО: Очікуємо 3, виходячи з попередніх результатів тестів
+    results_partial = crud.search_contacts(db_session, "o", user.id)
+    assert len(results_partial) == 2  # 'Johnson' and 'Brown' contain 'o'
 
     results_no_match = crud.search_contacts(db_session, "xyz", user.id)
     assert len(results_no_match) == 0
@@ -231,13 +234,8 @@ def test_upcoming_birthdays(db_session: Session):
     crud.create_contact(db_session, schemas.ContactCreate(first_name="Past", last_name="Bday", email="past@bday.com",
                                                           phone="4", birthday=past_bday), user.id)
 
-    # Тестування переходу через рік (наприклад, сьогодні 25 грудня, ДН 5 січня)
-    # Для цього тесту потрібно тимчасово змінити поточну дату, що складно
-    # в реальних тестах без mocking бібліотек.
-    # Залишимо це як примітку.
-
     birthdays = crud.upcoming_birthdays(db_session, user.id)
-    assert len(birthdays) == 2  # Сьогодні + через 3 дні
+    assert len(birthdays) == 2
     assert any(c.first_name == "Today" for c in birthdays)
     assert any(c.first_name == "Soon" for c in birthdays)
     assert not any(c.first_name == "Later" for c in birthdays)

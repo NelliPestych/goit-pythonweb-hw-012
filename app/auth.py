@@ -314,12 +314,15 @@ async def signup(body: schemas.UserCreate, background_tasks: BackgroundTasks, re
     # Створення та відправка токена для підтвердження email
     token_verification = create_email_verification_token({"sub": new_user.email})
 
-    # Формування посилання для підтвердження email
-    # Використовуємо 'request.url.netloc' для отримання хоста без шляху, щоб посилання було коректним
-    base_url = str(request.url).replace(request.url.path, "")
-    confirm_link = f"{base_url}/api/auth/confirm_email/{token_verification}"
+    # Виправлений виклик send_email із вказанням усіх необхідних аргументів
+    background_tasks.add_task(
+        send_email,
+        email=new_user.email,
+        username=new_user.email,
+        host=str(request.base_url),
+        token=token_verification
+    )
 
-    background_tasks.add_task(send_email, new_user.email, new_user.email, confirm_link)
     return new_user
 
 

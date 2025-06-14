@@ -1,7 +1,7 @@
 # app/routers/users.py
 """
 Модуль для управління операціями, пов'язаними з користувачами,
-такими як оновлення аватара.
+такими як оновлення аватара та отримання інформації про поточного користувача.
 """
 
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
@@ -30,6 +30,21 @@ try:
     print("Cloudinary configuration successful (or at least no immediate error).")
 except Exception as e:
     print(f"Error configuring Cloudinary: {e}")
+
+# Новий ендпоінт для отримання інформації про поточного користувача
+@router.get("/current_user", response_model=schemas.UserOut)
+async def read_users_me(current_user: models.User = Depends(get_current_user)):
+    """
+    Отримує інформацію про поточного аутентифікованого користувача.
+
+    Args:
+        current_user (models.User): Поточний аутентифікований користувач, отриманий з токена.
+
+    Returns:
+        schemas.UserOut: Схема даних поточного користувача.
+    """
+    return current_user
+
 
 @router.patch("/avatar", response_model=schemas.UserOut)
 async def update_avatar(

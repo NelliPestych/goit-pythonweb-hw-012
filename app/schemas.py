@@ -13,8 +13,14 @@ class ContactBase(BaseModel):
 class ContactCreate(ContactBase):
     pass
 
-class ContactUpdate(ContactBase):
-    pass
+class ContactUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    birthday: Optional[date] = None
+    additional_info: Optional[str] = None
+
 
 class ContactOut(ContactBase):
     id: int
@@ -46,3 +52,7 @@ class Token(BaseModel):
 
 class RequestEmail(BaseModel):
     email: EmailStr
+
+class PasswordReset(BaseModel):
+    token: str
+    new_password: str

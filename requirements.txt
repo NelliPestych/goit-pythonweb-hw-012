@@ -15,3 +15,7 @@ python-multipart
 Sphinx
 sphinx_rtd_theme
 sphinx-autodoc-typehints
+pytest
+pytest-cov
+httpx
+pytest-asyncio

@@ -1,4 +1,5 @@
-version: '3.8'
+# docker-compose.yml
+# It's recommended to remove the 'version' attribute for Docker Compose V2
 
 services:
   db:
@@ -6,47 +7,34 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      POSTGRES_DB: your_db_name
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: contacts_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
 
-  redis: # Новий сервіс для Redis
+  redis:
     image: redis:latest
     ports:
       - "6379:6379"
 
   web:
     build: .
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: /app/wait_for_db.sh db 5432 uvicorn app.main:app --host 0.0.0.0 --port 8000
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     depends_on:
       - db
-      - redis # Залежність від Redis
+      - redis
+    env_file:
+      - ./.env
+    # Додаємо явні змінні оточення для wait_for_db.sh
     environment:
-      # Передайте змінні середовища з .env файлу або вкажіть тут
-      DATABASE_URL: "postgresql://your_user:your_password@db:5432/your_db_name"
-      SECRET_KEY: "your_super_secret_key_here_for_jwt"
-      ALGORITHM: "HS256"
-      ACCESS_TOKEN_EXPIRE_MINUTES: 30
-      EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES: 1440
-
-      MAIL_USERNAME: "your_email@example.com"
-      MAIL_PASSWORD: "your_email_password"
-      MAIL_FROM: "your_email@example.com"
-      MAIL_PORT: 587
-      MAIL_SERVER: "smtp.example.com"
-
-      CLOUDINARY_CLOUD_NAME: "dq4qdzogr"
-      CLOUDINARY_API_KEY: "521687467524443"
-      CLOUDINARY_API_SECRET: "pjgXuaM1WJwRGbQZmr2zYy6-GKg"
-
-      REDIS_HOST: "redis"
-      REDIS_PORT: 6379
+      POSTGRES_DB: contacts_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
 volumes:
   postgres_data:

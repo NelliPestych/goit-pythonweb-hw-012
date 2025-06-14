@@ -53,6 +53,16 @@ async def startup():
     redis = Redis(host=os.getenv("REDIS_HOST", "localhost"), port=int(os.getenv("REDIS_PORT", 6379)), db=0, encoding="utf-8", decode_responses=True)
     await FastAPILimiter.init(redis)
 
+# Додаємо простий кореневий маршрут для тестування
+@app.get("/")
+def read_root():
+    """
+    Корневий маршрут API.
+
+    Повертає вітальне повідомлення.
+    """
+    return {"message": "Welcome to the Contacts API!"} # Змінено на більш інформативне повідомлення
+
 # Включаємо маршрути з інших модулів
 app.include_router(contacts.router, prefix="/contacts", tags=["Contacts"])
 app.include_router(auth.router, prefix="/api", tags=["Auth"])

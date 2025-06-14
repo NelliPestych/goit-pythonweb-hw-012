@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # wait_for_db.sh
 
 set -e
@@ -25,4 +25,4 @@ until psql -h "$host" -U "$PGUSER" -d "$PGDATABASE" -c '\q'; do
 done
 
 >&2 echo "PostgreSQL is up - executing command: $cmd"
-exec $cmd
+exec sh -c "$cmd"

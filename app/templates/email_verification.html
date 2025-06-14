@@ -1,15 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification</title>
+    <title>Підтвердження електронної пошти</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .button-container {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 0;
+            background-color: #28a745;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666666;
+            padding: 20px;
+        }
+        .link-text {
+            word-break: break-all;
+            color: #007bff;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <p>Hello {{ username }},</p>
-    <p>Thank you for registering with Contacts App. Please click the link below to verify your email address:</p>
-    <p><a href="{{ host }}api/auth/confirm_email/{{ token }}">Verify Email</a></p>
-    <p>If you did not register for this service, please ignore this email.</p>
-    <p>Regards,<br>Contacts App Team</p>
+    <div class="container">
+        <div class="header">
+            <h1>Contacts App</h1>
+        </div>
+        <div class="content">
+            <p>Привіт, <strong>{{ username }}</strong>!</p>
+            <p>Дякуємо за реєстрацію в нашому додатку.</p>
+            <p>Будь ласка, підтвердіть свою електронну пошту, натиснувши на посилання нижче:</p>
+            <div class="button-container">
+                <a href="{{ host }}/api/auth/confirm_email/{{ token }}" class="button">Підтвердити Email</a>
+            </div>
+            <p>Якщо кнопка не працює, скопіюйте та вставте наступне посилання у ваш браузер:</p>
+            <p class="link-text">{{ host }}/api/auth/confirm_email/{{ token }}</p>
+            <p>Це посилання дійсне протягом 24 годин.</p>
+            <p>З повагою,<br>Команда Contacts App</p>
+        </div>
+        <div class="footer">
+            <p>© 2025 Contacts App. Всі права захищені.</p>
+        </div>
+    </div>
 </body>
 </html>

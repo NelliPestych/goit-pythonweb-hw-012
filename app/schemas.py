@@ -64,6 +64,16 @@ class Token(BaseModel):
 class PasswordResetRequest(BaseModel):
     """
     Схема для запиту скидання пароля.
+    (Це було додано раніше, але я залишаю її тут для повноти)
+    """
+    email: EmailStr
+
+
+# !!! НОВА СХЕМА: RequestEmail !!!
+class RequestEmail(BaseModel):
+    """
+    Схема для запитів, що потребують лише email.
+    Використовується, наприклад, для повторного надсилання листа підтвердження.
     """
     email: EmailStr
 

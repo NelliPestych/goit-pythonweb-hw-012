@@ -1,4 +1,4 @@
-version: '3.8' # Можна видалити, як попереджає Docker Compose, але поки залишимо
+version: '3.8'
 
 services:
   db:
@@ -22,9 +22,8 @@ services:
     ports:
       - "6379:6379"
 
-  # Сервіс для ініціалізації бази даних за допомогою Alembic міграцій
   db-init:
-    build: . # Використовує той самий Dockerfile, що й web
+    build: .
     command: >
       /bin/sh -c "while ! pg_isready -h db -p 5432 -U postgres -d contacts_db; do
         echo 'Waiting for DB-INIT: PostgreSQL to be fully ready...';
@@ -33,11 +32,11 @@ services:
       echo 'DB-INIT: PostgreSQL is ready. Running Alembic migrations...';
       alembic upgrade head
       "
-    volumes: # Маємо монтувати об'єм, щоб Alembic бачив файли міграцій
+    volumes:
       - .:/app
     depends_on:
       db:
-        condition: service_healthy # db-init запускається після того, як db стане healthy
+        condition: service_healthy
 
   web:
     build: .
@@ -47,7 +46,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      db-init: # web залежить від db-init, щоб db-init завершився перед запуском web
+      db-init:
         condition: service_completed_successfully
       redis:
         condition: service_started

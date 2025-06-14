@@ -136,7 +136,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         "email": user.email,
         "confirmed": user.confirmed,
         "avatar_url": user.avatar_url,
-        "role": user.role
+        "role": str(user.role.value) # <--- ВИПРАВЛЕНО: Перетворюємо UserRole на рядок
     }
     await r.setex(f"user:{user.email}", USER_CACHE_EXPIRE_MINUTES * 60, json.dumps(user_dict))
 

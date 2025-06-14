@@ -9,11 +9,34 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
+    healthcheck: # Додаємо healthcheck для DB
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d contacts_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
+
+  # Сервіс для ініціалізації бази даних за допомогою Alembic міграцій
+  # Він запуститься, дочекається готовності DB, а потім застосує міграції.
+  db-init:
+    build: .
+    command: >
+      /bin/sh -c "while ! pg_isready -h db -p 5432 -U postgres -d contacts_db; do
+        echo 'Waiting for DB-INIT: PostgreSQL to be fully ready...';
+        sleep 2;
+      done;
+      echo 'DB-INIT: PostgreSQL is ready. Running Alembic migrations...';
+      alembic upgrade head
+      "
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy # db-init залежить від здоров'я DB
 
   web:
     build: .
@@ -23,8 +46,10 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db-init: # Web сервіс тепер залежить від завершення міграцій
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
     env_file:
       - ./.env
 

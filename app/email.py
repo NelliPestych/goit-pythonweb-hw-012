@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pathlib import Path
 
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType # Розкоментовано імпорти
 from fastapi import BackgroundTasks, HTTPException, status
 from pydantic import EmailStr
 
@@ -10,11 +10,12 @@ import os
 
 load_dotenv()
 
+# Конфігурація FastMail знову активована
 conf = ConnectionConfig(
     MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
     MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
     MAIL_FROM=os.getenv("MAIL_FROM"),
-    MAIL_PORT=int(os.getenv("MAIL_PORT", 465)),
+    MAIL_PORT=int(os.getenv("MAIL_PORT", 465)), # Використовуємо 465 як порт за замовчуванням
     MAIL_SERVER=os.getenv("MAIL_SERVER"),
     MAIL_FROM_NAME="Contacts App",
     MAIL_STARTTLS=False,
@@ -33,7 +34,7 @@ async def send_email(
 ):
     """
     Відправляє електронний лист для підтвердження email або скидання пароля.
-    У тестовому режимі виводить посилання для підтвердження/скидання в логи.
+    Виводить посилання в логи перед відправкою листа.
 
     Args:
         email (EmailStr): Адреса електронної пошти одержувача.
@@ -42,8 +43,14 @@ async def send_email(
         token (str): Токен верифікації або скидання пароля.
         subject (Optional[str]): Тема електронного листа. За замовчуванням "Confirm your email for Contacts App".
     """
+    # Завжди виводимо посилання в лог
+    if subject == "Password Reset Request":
+        print(f"DEBUG: Password Reset Email link for {email}: {host}/api/auth/reset_password/{token}")
+    else:
+        print(f"DEBUG: Email confirmation link for {email}: {host}/api/auth/confirm_email/{token}")
+
+    # Тепер намагаємося відправити реальний лист
     try:
-        # Активовано блок FastMail для відправки реальних листів
         message = MessageSchema(
             subject=subject,
             recipients=[email],
@@ -53,14 +60,9 @@ async def send_email(
 
         fm = FastMail(conf)
         await fm.send_message(message, template_name="email_verification.html")
-
-        # Додано логування посилання в термінал для обох випадків
-        if subject == "Password Reset Request":
-            print(f"DEBUG: Password Reset Email sent to {email} with link: {host}/api/auth/reset_password/{token}")
-        else:
-            print(f"DEBUG: Email sent to {email} with subject '{subject}' and link: {host}/api/auth/confirm_email/{token}")
+        print(f"INFO: Successfully attempted to send email to {email} with subject '{subject}'.") # Додано для підтвердження успішної спроби
 
     except Exception as e:
-        print(f"Error sending email: {e}")
+        print(f"ERROR: Failed to send email to {email} with subject '{subject}': {e}") # Більш детальне повідомлення про помилку
+        # Продовжуємо викидати виняток, щоб API повернув 500, якщо відправка не вдалася
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error sending email: {e}")
-

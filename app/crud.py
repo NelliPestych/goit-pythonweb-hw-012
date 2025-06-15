@@ -50,7 +50,7 @@ def create_contact(db: Session, contact: schemas.ContactCreate, user_id: int) ->
     db.refresh(db_contact)
     return db_contact
 
-def get_contacts(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[models.Contact]: # <--- user_id тепер обов'язковий і другий аргумент
+def get_contacts(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[models.Contact]:
     """Отримує список контактів для вказаного користувача з пагінацією."""
     return db.query(models.Contact).filter(models.Contact.user_id == user_id).offset(skip).limit(limit).all()
 
@@ -98,22 +98,31 @@ def search_contacts(db: Session, query: str, user_id: int) -> List[models.Contac
     ).all()
 
 
-def upcoming_birthdays(db: Session, user_id: int) -> List[models.Contact]: # <--- Назва функції та її сигнатура
-    """Отримує список контактів з майбутніми днями народження (наступні 7 днів) для вказаного користувача."""
+def upcoming_birthdays(db: Session, user_id: int) -> List[models.Contact]:
+    """Отримує список контактів з днями народження, що наближаються (наступні 7 днів) для вказаного користувача."""
     today = date.today()
     upcoming_contacts = []
 
     contacts = db.query(models.Contact).filter(models.Contact.user_id == user_id).all()
 
     for contact in contacts:
-        # Обчислюємо день народження контакту в поточному році
-        # Якщо день народження вже минув у поточному році, перевіряємо наступний рік
+        # Додаємо детальне логування кожного контакту та його полів
+        print(f"DEBUG: Processing contact: ID={contact.id}")
+        print(f"DEBUG:   First Name: {contact.first_name} (Type: {type(contact.first_name)})")
+        print(f"DEBUG:   Last Name: {contact.last_name} (Type: {type(contact.last_name)})")
+        print(f"DEBUG:   Email: {contact.email} (Type: {type(contact.email)})")
+        print(f"DEBUG:   Phone: {contact.phone} (Type: {type(contact.phone)})")
+        print(f"DEBUG:   Birthday: {contact.birthday} (Type: {type(contact.birthday)})")
+        print(f"DEBUG:   Additional Info: {contact.additional_info} (Type: {type(contact.additional_info)})")
+        print(f"DEBUG:   Created At: {contact.created_at} (Type: {type(contact.created_at)})")
+        print(f"DEBUG:   Updated At: {contact.updated_at} (Type: {type(contact.updated_at)})")
+
+
         birthday_this_year = contact.birthday.replace(year=today.year)
         if birthday_this_year < today:
             birthday_this_year = contact.birthday.replace(year=today.year + 1)
 
         delta = birthday_this_year - today
-        # Додаємо контакт, якщо його день народження припадає на наступні 7 днів
         if 0 <= delta.days <= 7:
             upcoming_contacts.append(contact)
 

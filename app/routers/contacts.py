@@ -54,8 +54,27 @@ def read_all(
     Returns:
         List[schemas.ContactOut]: Список контактів.
     """
-    # ВИПРАВЛЕНО: Правильна передача аргументів з user_id як обов'язковим другим аргументом
     return crud.get_contacts(db=db, user_id=current_user.id, skip=skip, limit=limit)
+
+
+# СПЕЦИФІЧНИЙ МАРШРУТ: Повинен йти ПЕРЕД загльним маршрутом /{contact_id}
+@router.get("/upcoming_birthdays", response_model=List[schemas.ContactOut])
+def birthdays(
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """
+    Отримує список контактів поточного користувача з майбутніми днями народження
+    (у наступні 7 днів).
+
+    Args:
+        db (Session): Сесія бази даних.
+        current_user (models.User): Поточний автентифікований користувач.
+
+    Returns:
+        List[schemas.ContactOut]: Список контактів з майбутніми днями народження.
+    """
+    return crud.upcoming_birthdays(db, user_id=current_user.id)
 
 
 @router.get("/{contact_id}", response_model=schemas.ContactOut)
@@ -106,7 +125,6 @@ def update_contact(
     Returns:
         schemas.ContactOut: Оновлений контакт.
     """
-    # ВИПРАВЛЕНО: Правильна передача аргументів
     updated_contact = crud.update_contact(db=db, contact_id=contact_id, contact=contact, user_id=current_user.id)
     if updated_contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
@@ -157,23 +175,3 @@ def search_contacts(
         List[schemas.ContactOut]: Список знайдених контактів.
     """
     return crud.search_contacts(db, query, user_id=current_user.id)
-
-
-@router.get("/upcoming_birthdays", response_model=List[schemas.ContactOut])
-def birthdays(
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    """
-    Отримує список контактів поточного користувача з майбутніми днями народження
-    (у наступні 7 днів).
-
-    Args:
-        db (Session): Сесія бази даних.
-        current_user (models.User): Поточний автентифікований користувач.
-
-    Returns:
-        List[schemas.ContactOut]: Список контактів з майбутніми днями народження.
-    """
-    # ВИПРАВЛЕНО: Правильна назва функції
-    return crud.upcoming_birthdays(db, user_id=current_user.id)

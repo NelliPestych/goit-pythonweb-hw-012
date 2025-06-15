@@ -7,7 +7,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.orm import Session
 from app import deps, crud, models, schemas
-from app.auth import get_current_user
+from app.auth import get_current_user, get_current_admin_user # <-- Імпортуємо get_current_admin_user
 import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
@@ -31,7 +31,6 @@ try:
 except Exception as e:
     print(f"Error configuring Cloudinary: {e}")
 
-# Новий ендпоінт для отримання інформації про поточного користувача
 @router.get("/current_user", response_model=schemas.UserOut)
 async def read_users_me(current_user: models.User = Depends(get_current_user)):
     """
@@ -49,21 +48,25 @@ async def read_users_me(current_user: models.User = Depends(get_current_user)):
 @router.patch("/avatar", response_model=schemas.UserOut)
 async def update_avatar(
     file: UploadFile = File(...),
-    current_user: models.User = Depends(get_current_user),
+    # Тепер ендпоінт залежить від get_current_admin_user, що забезпечує перевірку ролі
+    current_user: models.User = Depends(get_current_admin_user), # <-- Змінено тут
     db: Session = Depends(deps.get_db)
 ):
     """
     Оновлює аватар поточного користувача.
 
+    Ця операція доступна лише адміністраторам.
+
     Завантажує зображення на Cloudinary та зберігає URL аватара в базі даних користувача.
 
     Args:
         file (UploadFile): Файл зображення для завантаження.
-        current_user (models.User): Поточний аутентифікований користувач.
+        current_user (models.User): Поточний аутентифікований користувач (гарантовано адміністратор).
         db (Session): Сесія бази даних.
 
     Raises:
         HTTPException:
+            - 403 FORBIDDEN: Якщо користувач не є адміністратором (обробляється залежністю).
             - 404 NOT_FOUND: Якщо користувача не знайдено в базі даних.
             - 500 INTERNAL_SERVER_ERROR: Якщо сталася помилка під час завантаження на Cloudinary
                                          або інша внутрішня помилка сервера.

@@ -1,21 +1,22 @@
 # app/routers/contacts.py
 """
-Модуль для управління контактами користувачів.
-
-Включає ендпоінти для створення, читання, оновлення та видалення контактів,
-а також пошуку та перегляду майбутніх днів народження.
+Модуль, що визначає маршрути API для управління контактами.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Optional
+from datetime import date
+
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
+
 from app import schemas, crud, deps, models
-from app.auth import get_current_user
+from app.auth import get_current_user # Імпортуємо get_current_user
 
 router = APIRouter(prefix="/contacts", tags=["Contacts"])
 
+
 @router.post("/", response_model=schemas.ContactOut, status_code=status.HTTP_201_CREATED)
-def create(
+def create_contact(
     contact: schemas.ContactCreate,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(get_current_user)
@@ -24,54 +25,139 @@ def create(
     Створює новий контакт для поточного користувача.
 
     Args:
-        contact (schemas.ContactCreate): Дані для створення контакту.
+        contact (schemas.ContactCreate): Дані нового контакту.
         db (Session): Сесія бази даних.
-        current_user (models.User): Поточний аутентифікований користувач.
+        current_user (models.User): Поточний автентифікований користувач.
 
     Returns:
         schemas.ContactOut: Створений контакт.
     """
-    return crud.create_contact(db, contact, user_id=current_user.id)
+    return crud.create_contact(db=db, contact=contact, user_id=current_user.id)
+
 
 @router.get("/", response_model=List[schemas.ContactOut])
 def read_all(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=100),
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     """
-    Отримує список усіх контактів для поточного користувача.
+    Отримує список усіх контактів поточного користувача з пагінацією.
 
     Args:
-        skip (int): Кількість контактів, які потрібно пропустити (для пагінації).
-        limit (int): Максимальна кількість контактів для повернення (для пагінації).
+        skip (int): Кількість записів для пропуску.
+        limit (int): Максимальна кількість записів для повернення.
         db (Session): Сесія бази даних.
-        current_user (models.User): Поточний аутентифікований користувач.
+        current_user (models.User): Поточний автентифікований користувач.
 
     Returns:
         List[schemas.ContactOut]: Список контактів.
     """
-    return crud.get_contacts(db, skip, limit, user_id=current_user.id)
+    # ВИПРАВЛЕНО: Правильна передача аргументів з user_id як обов'язковим другим аргументом
+    return crud.get_contacts(db=db, user_id=current_user.id, skip=skip, limit=limit)
 
-@router.get("/search", response_model=List[schemas.ContactOut])
-def search(
-    query: str,
+
+@router.get("/{contact_id}", response_model=schemas.ContactOut)
+def read_contact(
+    contact_id: int,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     """
-    Шукає контакти поточного користувача за іменем, прізвищем або електронною поштою.
+    Отримує один контакт за його ID для поточного користувача.
+
+    Args:
+        contact_id (int): ID контакту.
+        db (Session): Сесія бази даних.
+        current_user (models.User): Поточний автентифікований користувач.
+
+    Raises:
+        HTTPException: 404 NOT_FOUND, якщо контакт не знайдено.
+
+    Returns:
+        schemas.ContactOut: Знайдений контакт.
+    """
+    db_contact = crud.get_contact(db, contact_id, user_id=current_user.id)
+    if db_contact is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
+    return db_contact
+
+
+@router.put("/{contact_id}", response_model=schemas.ContactOut)
+def update_contact(
+    contact_id: int,
+    contact: schemas.ContactUpdate,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """
+    Оновлює існуючий контакт за його ID для поточного користувача.
+
+    Args:
+        contact_id (int): ID контакту для оновлення.
+        contact (schemas.ContactUpdate): Оновлені дані контакту.
+        db (Session): Сесія бази даних.
+        current_user (models.User): Поточний автентифікований користувач.
+
+    Raises:
+        HTTPException: 404 NOT_FOUND, якщо контакт не знайдено.
+
+    Returns:
+        schemas.ContactOut: Оновлений контакт.
+    """
+    # ВИПРАВЛЕНО: Правильна передача аргументів
+    updated_contact = crud.update_contact(db=db, contact_id=contact_id, contact=contact, user_id=current_user.id)
+    if updated_contact is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
+    return updated_contact
+
+
+@router.delete("/{contact_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_contact(
+    contact_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """
+    Видаляє контакт за його ID для поточного користувача.
+
+    Args:
+        contact_id (int): ID контакту для видалення.
+        db (Session): Сесія бази даних.
+        current_user (models.User): Поточний автентифікований користувач.
+
+    Raises:
+        HTTPException: 404 NOT_FOUND, якщо контакт не знайдено.
+
+    Returns:
+        None
+    """
+    db_contact = crud.delete_contact(db, contact_id, user_id=current_user.id)
+    if db_contact is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
+    return {"message": "Contact deleted successfully"}
+
+
+@router.get("/search/", response_model=List[schemas.ContactOut])
+def search_contacts(
+    query: str = Query(..., min_length=1),
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """
+    Шукає контакти поточного користувача за ім'ям, прізвищем або email.
 
     Args:
         query (str): Рядок для пошуку.
         db (Session): Сесія бази даних.
-        current_user (models.User): Поточний аутентифікований користувач.
+        current_user (models.User): Поточний автентифікований користувач.
 
     Returns:
         List[schemas.ContactOut]: Список знайдених контактів.
     """
     return crud.search_contacts(db, query, user_id=current_user.id)
+
 
 @router.get("/upcoming_birthdays", response_model=List[schemas.ContactOut])
 def birthdays(
@@ -79,94 +165,15 @@ def birthdays(
     current_user: models.User = Depends(get_current_user)
 ):
     """
-    Отримує список контактів поточного користувача, які матимуть день народження
-    протягом найближчих 7 днів.
+    Отримує список контактів поточного користувача з майбутніми днями народження
+    (у наступні 7 днів).
 
     Args:
         db (Session): Сесія бази даних.
-        current_user (models.User): Поточний аутентифікований користувач.
+        current_user (models.User): Поточний автентифікований користувач.
 
     Returns:
         List[schemas.ContactOut]: Список контактів з майбутніми днями народження.
     """
+    # ВИПРАВЛЕНО: Правильна назва функції
     return crud.upcoming_birthdays(db, user_id=current_user.id)
-
-@router.get("/{contact_id}", response_model=schemas.ContactOut)
-def read(
-    contact_id: int,
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    """
-    Отримує контакт за його унікальним ідентифікатором для поточного користувача.
-
-    Args:
-        contact_id (int): Ідентифікатор контакту.
-        db (Session): Сесія бази даних.
-        current_user (models.User): Поточний аутентифікований користувач.
-
-    Raises:
-        HTTPException:
-            - 404 NOT_FOUND: Якщо контакт не знайдено або поточний користувач не має до нього доступу.
-
-    Returns:
-        schemas.ContactOut: Знайдений контакт.
-    """
-    db_contact = crud.get_contact(db, contact_id, user_id=current_user.id)
-    if db_contact is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found or not authorized")
-    return db_contact
-
-@router.put("/{contact_id}", response_model=schemas.ContactOut)
-def update(
-    contact_id: int,
-    contact: schemas.ContactUpdate,
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    """
-    Оновлює існуючий контакт поточного користувача.
-
-    Args:
-        contact_id (int): Ідентифікатор контакту, який потрібно оновити.
-        contact (schemas.ContactUpdate): Дані для оновлення контакту.
-        db (Session): Сесія бази даних.
-        current_user (models.User): Поточний аутентифікований користувач.
-
-    Raises:
-        HTTPException:
-            - 404 NOT_FOUND: Якщо контакт не знайдено або поточний користувач не має до нього доступу.
-
-    Returns:
-        schemas.ContactOut: Оновлений контакт.
-    """
-    updated_contact = crud.update_contact(db, contact_id, contact, user_id=current_user.id)
-    if updated_contact is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found or not authorized")
-    return updated_contact
-
-@router.delete("/{contact_id}", response_model=schemas.ContactOut)
-def delete(
-    contact_id: int,
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    """
-    Видаляє контакт поточного користувача за його ідентифікатором.
-
-    Args:
-        contact_id (int): Ідентифікатор контакту, який потрібно видалити.
-        db (Session): Сесія бази даних.
-        current_user (models.User): Поточний аутентифікований користувач.
-
-    Raises:
-        HTTPException:
-            - 404 NOT_FOUND: Якщо контакт не знайдено або поточний користувач не має до нього доступу.
-
-    Returns:
-        schemas.ContactOut: Видалений контакт.
-    """
-    deleted_contact = crud.delete_contact(db, contact_id, user_id=current_user.id)
-    if deleted_contact is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found or not authorized")
-    return deleted_contact

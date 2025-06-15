@@ -1,13 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from datetime import date, datetime
 from typing import Optional
-from app.models import UserRole # Імпортуємо UserRole з models.py, або визначимо тут Enum
-
-# Якщо ви не хочете імпортувати з models, можна перевизначити Enum тут:
-# import enum
-# class UserRole(str, enum.Enum):
-#     user = "user"
-#     admin = "admin"
+from app.models import UserRole # Імпортуємо UserRole з models.py
 
 class ContactBase(BaseModel):
     first_name: str
@@ -31,9 +25,16 @@ class ContactUpdate(BaseModel):
 
 class ContactOut(ContactBase):
     id: int
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True
+        # Додаємо JSON енкодери для обробки datetime та date об'єктів
+        json_encoders = {
+            datetime: lambda v: v.isoformat() if v else None,
+            date: lambda v: v.isoformat() if v else None,
+        }
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -49,15 +50,20 @@ class UserOut(UserBase):
     confirmed: bool
     created_at: datetime
     updated_at: datetime
-    role: UserRole # <--- ДОДАНО: поле для ролі користувача
+    role: UserRole # Поле для ролі користувача
 
     class Config:
         from_attributes = True
+        # Додаємо JSON енкодери для обробки datetime та date об'єктів у UserOut
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            date: lambda v: v.isoformat(),
+        }
 
 class Token(BaseModel):
     access_token: str
     token_type: str
-    refresh_token: Optional[str] = None # <--- ВИПРАВЛЕНО: Додано refresh_token як Optional
+    refresh_token: Optional[str] = None
 
 
 class RequestEmail(BaseModel):

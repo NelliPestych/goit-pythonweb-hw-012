@@ -156,6 +156,12 @@ async def get_current_user(
         if 'role' in user_data and isinstance(user_data['role'], str):
             from app.models import UserRole
             user_data['role'] = UserRole(user_data['role'])
+        # Перетворення строкових дат з Redis назад в об'єкти datetime
+        if 'created_at' in user_data and isinstance(user_data['created_at'], str):
+            user_data['created_at'] = datetime.fromisoformat(user_data['created_at'])
+        if 'updated_at' in user_data and isinstance(user_data['updated_at'], str):
+            user_data['updated_at'] = datetime.fromisoformat(user_data['updated_at'])
+
         user = models.User(**user_data)
         print(f"User {email} loaded from Redis cache.")
         return user
@@ -173,7 +179,9 @@ async def get_current_user(
         "email": user.email,
         "confirmed": user.confirmed,
         "avatar_url": user.avatar_url,
-        "role": str(user.role.value)
+        "role": str(user.role.value),
+        "created_at": user.created_at.isoformat(), # Перетворення datetime в ISO рядок
+        "updated_at": user.updated_at.isoformat()  # Перетворення datetime в ISO рядок
     }
     await r.setex(cache_key, USER_CACHE_EXPIRE_MINUTES * 60, json.dumps(user_dict))
     print(f"User {email} loaded from DB and cached in Redis.")

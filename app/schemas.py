@@ -48,16 +48,16 @@ class UserLogin(UserBase):
 class UserOut(UserBase):
     id: int
     confirmed: bool
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] # <--- Змінено на Optional[datetime]
+    updated_at: Optional[datetime] # <--- Змінено на Optional[datetime]
     role: UserRole # Поле для ролі користувача
 
     class Config:
         from_attributes = True
         # Додаємо JSON енкодери для обробки datetime та date об'єктів у UserOut
         json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            date: lambda v: v.isoformat(),
+            datetime: lambda v: v.isoformat() if v else None, # <--- Додано if v else None
+            date: lambda v: v.isoformat() if v else None, # <--- Додано if v else None
         }
 
 class Token(BaseModel):

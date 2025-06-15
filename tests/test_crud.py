@@ -1,4 +1,3 @@
-# tests/test_crud.py
 """
 Модуль для модульних тестів CRUD-операцій, визначених у app/crud.py.
 """
@@ -8,23 +7,19 @@ from datetime import date, timedelta
 from sqlalchemy.orm import Session
 import pytest
 
-
-# Фікстура db_session надається conftest.py
-# Вона забезпечує ізольовану тестову сесію БД для кожного тесту.
-
 def test_create_user(db_session: Session):
     """
     Тестує створення нового користувача.
     Пароль тепер хешується всередині crud.create_user.
     """
     user_data = schemas.UserCreate(email="test@example.com", password="testpassword")
-    user = crud.create_user(db_session, user_data)  # Передаємо схему з чистим паролем
+    user = crud.create_user(db_session, user_data)
     assert user.email == "test@example.com"
-    assert hasattr(user, "hashed_password")  # Перевіряємо, що поле hashed_password існує
-    assert user.hashed_password != "testpassword"  # Перевіряємо, що пароль дійсно хешований
+    assert hasattr(user, "hashed_password")
+    assert user.hashed_password != "testpassword"
     assert user.id is not None
     assert user.confirmed is False
-    assert user.role == models.UserRole.user  # Перевіряємо роль за замовчуванням
+    assert user.role == models.UserRole.user
 
 
 def test_get_user_by_email(db_session: Session):
@@ -50,9 +45,9 @@ def test_update_user_confirmation(db_session: Session):
     user = crud.create_user(db_session, user_data)
     assert user.confirmed is False
 
-    crud.confirm_user_email(db_session, user)  # Використовуємо confirm_user_email замість update_user_confirmation
+    crud.confirm_user_email(db_session, user)
     assert user.confirmed is True
-    db_session.refresh(user)  # Оновлюємо об'єкт після змін
+    db_session.refresh(user)
     assert user.confirmed is True
 
 
@@ -74,7 +69,7 @@ def test_create_contact(db_session: Session):
     contact = crud.create_contact(db_session, contact_data, user.id)
     assert contact.first_name == "John"
     assert contact.email == "john.doe@example.com"
-    assert contact.phone == "1234567890"  # Додано перевірку phone
+    assert contact.phone == "1234567890"
     assert contact.user_id == user.id
     assert contact.id is not None
 
@@ -101,7 +96,6 @@ def test_get_contacts(db_session: Session):
     assert len(contacts_user2) == 1
     assert contacts_user2[0].first_name == "E"
 
-    # Тест на отримання всіх контактів (без user_id)
     all_contacts = crud.get_contacts(db_session, user_id=None)
     assert len(all_contacts) == 3
 
@@ -119,12 +113,10 @@ def test_get_contact(db_session: Session):
     assert retrieved_contact.id == created_contact.id
     assert retrieved_contact.email == "get@me.com"
 
-    # Спробуємо отримати контакт іншого користувача
     other_user = crud.create_user(db_session, schemas.UserCreate(email="other@example.com", password="pass"))
     unauthorized_contact = crud.get_contact(db_session, created_contact.id, other_user.id)
     assert unauthorized_contact is None
 
-    # Спробуємо отримати неіснуючий контакт
     non_existent_contact = crud.get_contact(db_session, 999, user.id)
     assert non_existent_contact is None
 
@@ -140,14 +132,13 @@ def test_update_contact(db_session: Session):
 
     update_data = schemas.ContactUpdate(email="new@email.com", phone="222", additional_info="Updated info")
     updated_contact = crud.update_contact(db_session, contact.id, user.id,
-                                          update_data)  # Порядок аргументів: contact_id, user_id, contact
+                                          update_data)
 
     assert updated_contact.email == "new@email.com"
     assert updated_contact.phone == "222"
     assert updated_contact.first_name == "Old"
     assert updated_contact.additional_info == "Updated info"
 
-    # Спробуємо оновити контакт, який не належить користувачу
     other_user = crud.create_user(db_session, schemas.UserCreate(email="attacker@example.com", password="pass"))
     unauthorized_update = crud.update_contact(db_session, contact.id, other_user.id, update_data)
     assert unauthorized_update is None

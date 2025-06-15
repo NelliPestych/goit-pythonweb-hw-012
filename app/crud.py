@@ -1,4 +1,3 @@
-# app/crud.py
 """
 Модуль, що містить функції для виконання CRUD-операцій
 (Create, Read, Update, Delete) з даними в базі даних.
@@ -7,7 +6,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from app import models, schemas
-from app.auth import get_password_hash # Імпортуємо функцію хешування пароля з app.auth
+from app.auth import get_password_hash
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
@@ -106,7 +105,6 @@ def upcoming_birthdays(db: Session, user_id: int) -> List[models.Contact]:
     contacts = db.query(models.Contact).filter(models.Contact.user_id == user_id).all()
 
     for contact in contacts:
-        # Додаємо детальне логування кожного контакту та його полів
         print(f"DEBUG: Processing contact: ID={contact.id}")
         print(f"DEBUG:   First Name: {contact.first_name} (Type: {type(contact.first_name)})")
         print(f"DEBUG:   Last Name: {contact.last_name} (Type: {type(contact.last_name)})")

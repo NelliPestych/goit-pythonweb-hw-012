@@ -1,5 +1,3 @@
-# app/main.py
-
 """
 Головний файл застосунку Contacts App API.
 
@@ -16,19 +14,16 @@ from redis.asyncio import Redis
 from dotenv import load_dotenv
 import os
 import time
-# Імпортуємо auth_routes замість auth
-from app.routers import contacts, auth_routes, users # <-- Змінено тут
+
+from app.routers import contacts, auth_routes, users
 from app.database import engine, Base, SessionLocal, create_db_and_tables
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import OperationalError
 
-# Завантажуємо змінні середовища з файлу .env
 load_dotenv()
 
-# Ініціалізуємо FastAPI додаток
 app = FastAPI(title="Contacts API")
 
-# Конфігурація CORS (Cross-Origin Resource Sharing)
 origins = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
@@ -41,7 +36,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Конфігурація FastAPILimiter для обмеження швидкості запитів
 @app.on_event("startup")
 async def startup():
     """
@@ -82,7 +76,6 @@ async def startup():
 def read_root():
     return {"message": "Welcome to the Contacts API!"}
 
-# Включаємо маршрути з інших модулів
 app.include_router(contacts.router, prefix="/contacts", tags=["Contacts"])
-app.include_router(auth_routes.router, prefix="/api", tags=["Auth"]) # <-- Змінено тут
+app.include_router(auth_routes.router, prefix="/api", tags=["Auth"])
 app.include_router(users.router, prefix="/api", tags=["Users"])

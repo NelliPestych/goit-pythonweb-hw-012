@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from datetime import date, datetime
 from typing import Optional
-from app.models import UserRole # Імпортуємо UserRole з models.py
+from app.models import UserRole
 
 class ContactBase(BaseModel):
     first_name: str
@@ -30,7 +30,6 @@ class ContactOut(ContactBase):
 
     class Config:
         from_attributes = True
-        # Додаємо JSON енкодери для обробки datetime та date об'єктів
         json_encoders = {
             datetime: lambda v: v.isoformat() if v else None,
             date: lambda v: v.isoformat() if v else None,
@@ -48,16 +47,15 @@ class UserLogin(UserBase):
 class UserOut(UserBase):
     id: int
     confirmed: bool
-    created_at: Optional[datetime] # <--- Змінено на Optional[datetime]
-    updated_at: Optional[datetime] # <--- Змінено на Optional[datetime]
-    role: UserRole # Поле для ролі користувача
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+    role: UserRole
 
     class Config:
         from_attributes = True
-        # Додаємо JSON енкодери для обробки datetime та date об'єктів у UserOut
         json_encoders = {
-            datetime: lambda v: v.isoformat() if v else None, # <--- Додано if v else None
-            date: lambda v: v.isoformat() if v else None, # <--- Додано if v else None
+            datetime: lambda v: v.isoformat() if v else None,
+            date: lambda v: v.isoformat() if v else None,
         }
 
 class Token(BaseModel):

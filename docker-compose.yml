@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
-    healthcheck: # Додаємо healthcheck для DB
+    healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d contacts_db" ]
       interval: 5s
       timeout: 5s
@@ -20,8 +20,6 @@ services:
     ports:
       - "6379:6379"
 
-  # Сервіс для ініціалізації бази даних за допомогою Alembic міграцій
-  # Він запуститься, дочекається готовності DB, а потім застосує міграції.
   db-init:
     build: .
     command: >
@@ -36,7 +34,7 @@ services:
       - .:/app
     depends_on:
       db:
-        condition: service_healthy # db-init залежить від здоров'я DB
+        condition: service_healthy
 
   web:
     build: .
@@ -46,7 +44,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      db-init: # Web сервіс тепер залежить від завершення міграцій
+      db-init:
         condition: service_completed_successfully
       redis:
         condition: service_started

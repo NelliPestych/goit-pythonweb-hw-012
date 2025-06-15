@@ -1,4 +1,3 @@
-# app/routers/auth_routes.py
 """
 Модуль для управління аутентифікацією та авторизацією користувачів.
 
@@ -9,13 +8,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from datetime import timedelta, datetime # <-- Додано datetime
+from datetime import timedelta, datetime
 import json
 import redis.asyncio as redis
 
-# Імпортуємо з app.auth, а не з app.core.auth
 from app import schemas, crud, deps, models
-from app.auth import ( # Імпортуємо з app.auth
+from app.auth import (
     create_email_verification_token, decode_email_verification_token,
     verify_password, create_access_token, get_current_user,
     get_password_hash, create_password_reset_token, decode_password_reset_token,
@@ -138,8 +136,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         "confirmed": user.confirmed,
         "avatar_url": user.avatar_url,
         "role": str(user.role.value),
-        "created_at": user.created_at.isoformat(), # <-- ДОДАНО: Перетворення datetime в ISO рядок
-        "updated_at": user.updated_at.isoformat()  # <-- ДОДАНО: Перетворення datetime в ISO рядок
+        "created_at": user.created_at.isoformat(),
+        "updated_at": user.updated_at.isoformat()
     }
     await r.setex(f"user:{user.email}", USER_CACHE_EXPIRE_MINUTES * 60, json.dumps(user_dict))
 

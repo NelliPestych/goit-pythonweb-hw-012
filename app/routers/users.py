@@ -1,4 +1,3 @@
-# app/routers/users.py
 """
 Модуль для управління операціями, пов'язаними з користувачами,
 такими як оновлення аватара та отримання інформації про поточного користувача.
@@ -7,7 +6,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.orm import Session
 from app import deps, crud, models, schemas
-from app.auth import get_current_user, get_current_admin_user # <-- Імпортуємо get_current_admin_user
+from app.auth import get_current_user, get_current_admin_user
 import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
@@ -48,8 +47,7 @@ async def read_users_me(current_user: models.User = Depends(get_current_user)):
 @router.patch("/avatar", response_model=schemas.UserOut)
 async def update_avatar(
     file: UploadFile = File(...),
-    # Тепер ендпоінт залежить від get_current_admin_user, що забезпечує перевірку ролі
-    current_user: models.User = Depends(get_current_admin_user), # <-- Змінено тут
+    current_user: models.User = Depends(get_current_admin_user),
     db: Session = Depends(deps.get_db)
 ):
     """

@@ -1,4 +1,3 @@
-# tests/test_auth.py
 """
 Модуль для інтеграційних тестів маршрутів аутентифікації та
 модуля app.auth.
@@ -9,10 +8,7 @@ from sqlalchemy.orm import Session
 from app import schemas
 from app.auth import get_password_hash
 import pytest
-import asyncio  # Необхідний для асинхронних тестів
-
-
-# client та db_session фікстури надаються conftest.py
+import asyncio
 
 def test_create_user(client: TestClient, db_session: Session):
     """
@@ -30,7 +26,6 @@ def test_create_user(client: TestClient, db_session: Session):
     assert "created_at" in data
     assert "updated_at" in data
 
-    # Перевіряємо, чи користувач доданий до бази даних
     from app.crud import get_user_by_email
     user_in_db = get_user_by_email(db_session, "test_register@example.com")
     assert user_in_db is not None
@@ -42,13 +37,11 @@ def test_register_existing_user(client: TestClient):
     """
     Тестує спробу реєстрації користувача з вже існуючим email.
     """
-    # Створюємо користувача вперше
     client.post(
         "/api/auth/register",
         json={"email": "existing_reg@example.com", "password": "TestPassword123"}
     )
 
-    # Спроба зареєструвати того ж користувача знову
     response = client.post(
         "/api/auth/register",
         json={"email": "existing_reg@example.com", "password": "AnotherPassword456"}
@@ -61,14 +54,13 @@ def test_login_user(client: TestClient, db_session: Session):
     """
     Тестує вхід користувача та отримання JWT токена.
     """
-    # Створюємо користувача і підтверджуємо його
     email = "test_login@example.com"
     password = "TestPassword123"
     hashed_password = get_password_hash(password)
     user_model = schemas.UserCreate(email=email, password=password)
     from app.crud import create_user, update_user_confirmation
     user = create_user(db_session, user_model)
-    update_user_confirmation(db_session, user, True)  # Підтверджуємо email
+    update_user_confirmation(db_session, user, True)
 
     response = client.post(
         "/api/auth/login",
@@ -88,7 +80,7 @@ def test_login_user_unconfirmed_email(client: TestClient, db_session: Session):
     password = "TestPassword123"
     user_model = schemas.UserCreate(email=email, password=password)
     from app.crud import create_user
-    create_user(db_session, user_model)  # Не підтверджуємо email
+    create_user(db_session, user_model)
 
     response = client.post(
         "/api/auth/login",
@@ -107,7 +99,7 @@ def test_login_user_invalid_credentials(client: TestClient, db_session: Session)
     user_model = schemas.UserCreate(email=email, password=password)
     from app.crud import create_user, update_user_confirmation
     user = create_user(db_session, user_model)
-    update_user_confirmation(db_session, user, True)  # Підтверджуємо email
+    update_user_confirmation(db_session, user, True)
 
     response = client.post(
         "/api/auth/login",
@@ -141,7 +133,6 @@ def test_confirm_email_valid_token(client: TestClient, db_session: Session):
     assert response.status_code == 200
     assert response.json()["message"] == "Email successfully confirmed"
 
-    # Перевіряємо, що користувач дійсно підтверджений в БД
     user_in_db = get_user_by_email(db_session, email)
     assert user_in_db.confirmed is True
 
@@ -164,7 +155,7 @@ def test_confirm_email_already_confirmed(client: TestClient, db_session: Session
     user_model = schemas.UserCreate(email=email, password=password)
     from app.crud import create_user, update_user_confirmation
     user = create_user(db_session, user_model)
-    update_user_confirmation(db_session, user, True)  # Підтверджуємо email одразу
+    update_user_confirmation(db_session, user, True)
 
     from app.auth import create_email_verification_token
     token = create_email_verification_token({"sub": email})

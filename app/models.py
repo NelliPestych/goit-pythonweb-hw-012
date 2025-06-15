@@ -1,4 +1,3 @@
-# app/models.py
 """
 Модуль, що визначає моделі SQLAlchemy для Contacts App,
 включаючи моделі User та Contact.
@@ -12,7 +11,6 @@ import enum
 
 Base = declarative_base()
 
-# Визначення переліку для ролей користувачів
 class UserRole(enum.Enum):
     user = "user"
     admin = "admin"
@@ -39,8 +37,7 @@ class User(Base):
     confirmed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    avatar_url = Column(String, nullable=True) # Поле для URL аватара
-    # Додаємо поле role з типом Enum
+    avatar_url = Column(String, nullable=True)
     role = Column(Enum(UserRole), default=UserRole.user, nullable=False)
 
     contacts = relationship("Contact", back_populates="owner")
@@ -66,7 +63,7 @@ class Contact(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String, index=True, nullable=False)
     last_name = Column(String, index=True, nullable=False)
-    email = Column(String, unique=False, index=True, nullable=False) # email тепер не унікальний глобально
+    email = Column(String, unique=False, index=True, nullable=False)
     phone = Column(String, unique=False, nullable=False)
     birthday = Column(Date, nullable=False)
     additional_info = Column(String, nullable=True)

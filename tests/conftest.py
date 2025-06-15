@@ -1,4 +1,3 @@
-# tests/conftest.py
 """
 Модуль для фікстур Pytest, що налаштовує тестове середовище.
 
@@ -14,9 +13,8 @@ from app.main import app
 from app.database import Base
 from app.deps import get_db
 import os
-from unittest.mock import AsyncMock, patch # Імпортуємо AsyncMock та patch
+from unittest.mock import AsyncMock, patch
 
-# Використовуємо SQLite для тестів для швидкості та ізоляції
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
 engine = create_engine(
@@ -33,7 +31,7 @@ def db_engine():
     """
     Base.metadata.create_all(bind=engine)
     yield engine
-    Base.metadata.drop_all(bind=engine) # Очищуємо базу даних після всіх тестів
+    Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture(scope="function")
 def db_session(db_engine):
@@ -48,7 +46,7 @@ def db_session(db_engine):
     session = TestingSessionLocal(bind=connection)
     yield session
     session.close()
-    transaction.rollback() # Відкат транзакції для чистого стану бази даних
+    transaction.rollback()
     connection.close()
 
 @pytest.fixture(scope="function")
@@ -67,7 +65,7 @@ def client(db_session):
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as c:
         yield c
-    app.dependency_overrides.clear() # Очищаємо перевизначення після тестів
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -80,9 +78,8 @@ def mock_send_email():
     `autouse=True` означає, що ця фікстура буде автоматично застосовуватися до всіх тестів.
     """
     with patch("app.email.FastMail", autospec=True) as mock_fastmail_cls:
-        # Створюємо екземпляр mock FastMail та мокуємо його метод send_message
         mock_instance = AsyncMock()
         mock_fastmail_cls.return_value = mock_instance
-        mock_instance.send_message = AsyncMock(return_value=None) # Метод send_message буде мокуватися
+        mock_instance.send_message = AsyncMock(return_value=None)
 
-        yield mock_instance # Повертаємо mock-об'єкт, якщо тест захоче його використовувати
+        yield mock_instance

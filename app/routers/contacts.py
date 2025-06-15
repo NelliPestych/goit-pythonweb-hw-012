@@ -1,4 +1,3 @@
-# app/routers/contacts.py
 """
 Модуль, що визначає маршрути API для управління контактами.
 """
@@ -10,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app import schemas, crud, deps, models
-from app.auth import get_current_user # Імпортуємо get_current_user
+from app.auth import get_current_user
 
 router = APIRouter(prefix="/contacts", tags=["Contacts"])
 
@@ -57,7 +56,6 @@ def read_all(
     return crud.get_contacts(db=db, user_id=current_user.id, skip=skip, limit=limit)
 
 
-# СПЕЦИФІЧНИЙ МАРШРУТ: Повинен йти ПЕРЕД загльним маршрутом /{contact_id}
 @router.get("/upcoming_birthdays", response_model=List[schemas.ContactOut])
 def birthdays(
     db: Session = Depends(deps.get_db),

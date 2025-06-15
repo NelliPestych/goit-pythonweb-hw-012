@@ -31,18 +31,58 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 async def get_redis_client() -> redis.Redis:
+    """
+    Отримує асинхронний клієнт Redis.
+
+    Ця функція є тимчасовою для демонстрації кешування. У production додатку
+    клієнт Redis слід ініціалізувати один раз при запуску програми
+    і передавати як залежність або через глобальний об'єкт.
+
+    Returns:
+        redis.Redis: Асинхронний клієнт Redis.
+    """
     redis_host = os.getenv("REDIS_HOST", "localhost")
     redis_port = int(os.getenv("REDIS_PORT", 6379))
     return redis.Redis(host=redis_host, port=redis_port, db=0, encoding="utf-8", decode_responses=True)
 
 
 def verify_password(plain_password, hashed_password):
+    """
+    Перевіряє, чи відповідає наданий пароль хешованому паролю.
+
+    Args:
+        plain_password (str): Пароль у відкритому вигляді.
+        hashed_password (str): Хешований пароль.
+
+    Returns:
+        bool: True, якщо паролі збігаються, інакше False.
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    """
+    Хешує наданий пароль.
+
+    Args:
+        password (str): Пароль у відкритому вигляді.
+
+    Returns:
+        str: Хешований пароль.
+    """
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Створює JWT токен доступу.
+
+    Args:
+        data (dict): Дані, які потрібно закодувати в токен (наприклад, {"sub": "user_email"}).
+        expires_delta (Optional[timedelta]): Термін дії токена. Якщо None, використовується
+                                             значення за замовчуванням `ACCESS_TOKEN_EXPIRE_MINUTES`.
+
+    Returns:
+        str: Закодований JWT токен.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -53,6 +93,19 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 def decode_token(token: str):
+    """
+    Декодує JWT токен.
+
+    Args:
+        token (str): JWT токен.
+
+    Raises:
+        HTTPException:
+            - 401 UNAUTHORIZED: Якщо токен недійсний або його не вдалося декодувати.
+
+    Returns:
+        dict: Декодоване навантаження (payload) токена.
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
@@ -68,6 +121,24 @@ async def get_current_user(
     db: Session = Depends(deps.get_db),
     r: redis.Redis = Depends(get_redis_client)
 ) -> models.User:
+    """
+    Отримує поточного аутентифікованого користувача.
+
+    Спочатку намагається отримати дані користувача з кешу Redis.
+    Якщо користувача немає в кеші, звертається до бази даних і кешує результат.
+
+    Args:
+        token (str): JWT токен з заголовка Authorization.
+        db (Session): Сесія бази даних.
+        r (redis.Redis): Клієнт Redis для кешування.
+
+    Raises:
+        HTTPException:
+            - 401 UNAUTHORIZED: Якщо не вдалося перевірити облікові дані.
+
+    Returns:
+        models.User: Об'єкт поточного користувача.
+    """
     payload = decode_token(token)
     email: str = payload.get("sub")
     if email is None:
@@ -109,7 +180,39 @@ async def get_current_user(
 
     return user
 
+async def get_current_admin_user(current_user: models.User = Depends(get_current_user)) -> models.User:
+    """
+    Залежність FastAPI, яка перевіряє, чи поточний користувач є адміністратором.
+
+    Args:
+        current_user (models.User): Поточний автентифікований користувач.
+
+    Raises:
+        HTTPException:
+            - 403 FORBIDDEN: Якщо користувач не має ролі "admin".
+
+    Returns:
+        models.User: Об'єкт користувача, якщо він є адміністратором.
+    """
+    if current_user.role != models.UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Operation forbidden: Only administrators can perform this action."
+        )
+    return current_user
+
 def create_email_verification_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Створює JWT токен для верифікації електронної пошти.
+
+    Args:
+        data (dict): Дані, які потрібно закодувати в токен (наприклад, {"sub": "user_email"}).
+        expires_delta (Optional[timedelta]): Термін дії токена. Якщо None, використовується
+                                             значення за замовчуванням `EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES`.
+
+    Returns:
+        str: Закодований JWT токен.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -120,6 +223,19 @@ def create_email_verification_token(data: dict, expires_delta: Optional[timedelt
     return encoded_jwt
 
 def decode_email_verification_token(token: str):
+    """
+    Декодує JWT токен верифікації електронної пошти.
+
+    Args:
+        token (str): Токен верифікації.
+
+    Raises:
+        HTTPException:
+            - 400 BAD_REQUEST: Якщо токен недійсний або термін його дії минув.
+
+    Returns:
+        str: Електронна пошта користувача з токена.
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
@@ -131,6 +247,17 @@ def decode_email_verification_token(token: str):
 
 
 def create_password_reset_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Створює JWT токен для скидання пароля.
+
+    Args:
+        data (dict): Дані, які потрібно закодувати в токен (наприклад, {"sub": "user_email"}).
+        expires_delta (Optional[timedelta]): Термін дії токена. Якщо None, використовується
+                                             значення за замовчуванням `PASSWORD_RESET_TOKEN_EXPIRE_MINUTES`.
+
+    Returns:
+        str: Закодований JWT токен.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -141,6 +268,19 @@ def create_password_reset_token(data: dict, expires_delta: Optional[timedelta] =
     return encoded_jwt
 
 def decode_password_reset_token(token: str):
+    """
+    Декодує JWT токен скидання пароля.
+
+    Args:
+        token (str): Токен скидання пароля.
+
+    Raises:
+        HTTPException:
+            - 400 BAD_REQUEST: Якщо токен недійсний або термін його дії минув.
+
+    Returns:
+        str: Електронна пошта користувача з токена.
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")

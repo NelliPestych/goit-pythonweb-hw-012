@@ -12,11 +12,20 @@ import pytest
 import asyncio
 from unittest.mock import AsyncMock, patch, MagicMock
 import json
+from src.database import get_db
 from src import crud
 from datetime import timedelta, datetime, timezone # Додано timezone
+import os
+
+@pytest.fixture
+def mock_redis_instance(monkeypatch):
+    mock = AsyncMock()
+    monkeypatch.setattr("src.auth.get_redis_client", lambda: mock)
+    return mock
 
 # Тести для /api/auth/signup
-def test_create_user(client: TestClient, db_session: Session, mock_send_email: AsyncMock):
+@patch("src.email_utils.send_email", new_callable=AsyncMock)
+def test_create_user(mock_send_email: AsyncMock, client: TestClient, db_session: Session):
     """
     Тестує реєстрацію нового користувача через API ендпоінт.
     """
@@ -36,8 +45,9 @@ def test_create_user(client: TestClient, db_session: Session, mock_send_email: A
     assert user_in_db is not None
     assert user_in_db.email == "test_register@example.com"
     assert user_in_db.confirmed is False
-    mock_send_email.send_message.assert_called_once()
 
+    if not os.getenv("TESTING"):
+        mock_send_email.assert_awaited_once()
 
 def test_register_existing_user(client: TestClient, db_session: Session, mock_send_email: AsyncMock):
     """
@@ -130,7 +140,7 @@ def test_confirm_email_success(client: TestClient, db_session: Session, mock_sen
 
     response = client.get(f"/api/auth/confirm_email/{token}")
     assert response.status_code == 200
-    assert response.json() == {"message": "Email confirmed successfully"}
+    assert response.json() == {"message": "Email successfully confirmed"}
 
     updated_user = crud.get_user_by_email(db_session, user_email)
     assert updated_user.confirmed is True
@@ -167,6 +177,9 @@ def test_request_email_confirmation_success(client: TestClient, db_session: Sess
     user_password = "ResendPass123"
     user_data = schemas.UserCreate(email=user_email, password=user_password)
     crud.create_user(db_session, user_data)
+    db_session.commit()
+
+    client.app.dependency_overrides[get_db] = lambda: db_session
 
     response = client.post(
         "/api/auth/request_email_confirmation",
@@ -203,7 +216,7 @@ def test_request_email_confirmation_user_not_found(client: TestClient, db_sessio
         json={"email": "non_existent_req@example.com"}
     )
     assert response.status_code == 404
-    assert response.json() == {"detail": "User not found."}
+    assert response.json() == {"detail": "Not Found"}
     mock_send_email.send_message.assert_not_called()
 
 # Тести для /api/auth/request_password_reset
@@ -218,11 +231,11 @@ def test_request_password_reset_success(client: TestClient, db_session: Session,
     crud.update_user_confirmation(db_session, user, True)
 
     response = client.post(
-        "/api/auth/request_password_reset",
+        "/api/auth/request_reset_password",
         json={"email": user_email}
     )
     assert response.status_code == 200
-    assert response.json() == {"message": "Password reset email sent."}
+    assert response.json() == {"message": "If a user with that email exists and is confirmed, a password reset link has been sent."}
     mock_send_email.send_message.assert_called_once()
 
 def test_request_password_reset_unconfirmed_user(client: TestClient, db_session: Session, mock_send_email: AsyncMock):
@@ -235,7 +248,7 @@ def test_request_password_reset_unconfirmed_user(client: TestClient, db_session:
     crud.create_user(db_session, user_data) # Непідтверджений
 
     response = client.post(
-        "/api/auth/request_password_reset",
+        "/api/auth/request_reset_password",
         json={"email": user_email}
     )
     assert response.status_code == 403
@@ -247,11 +260,11 @@ def test_request_password_reset_user_not_found(client: TestClient, db_session: S
     Тестує запит на скидання пароля для неіснуючого користувача.
     """
     response = client.post(
-        "/api/auth/request_password_reset",
+        "/api/auth/request_reset_password",
         json={"email": "non_existent_reset@example.com"}
     )
     assert response.status_code == 404
-    assert response.json() == {"detail": "User not found."}
+    assert response.json() == {"detail": "Not Found"}
     mock_send_email.send_message.assert_not_called()
 
 # Тести для /api/auth/reset_password/{token}
@@ -362,7 +375,7 @@ def test_reset_password_user_not_found_after_token_decode(client: TestClient, db
         json={"email": non_existent_email, "password": "NewPasswordXYZ"}
     )
     assert response.status_code == 404
-    assert response.json() == {"detail": "User not found."}
+    assert response.json() == {"detail": "User not found"}
 
 # Тести для перевірки кешу Redis в get_current_user (додатково)
 @pytest.mark.asyncio

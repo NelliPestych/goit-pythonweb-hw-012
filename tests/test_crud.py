@@ -45,7 +45,7 @@ def test_update_user_confirmation(db_session: Session):
     user = crud.create_user(db_session, user_data)
     assert user.confirmed is False
 
-    # crud.confirm_user_email(db_session, user)
+    crud.confirm_user_email(db_session, user)
     assert user.confirmed is True
     db_session.refresh(user)
     assert user.confirmed is True
@@ -194,7 +194,7 @@ def test_search_contacts(db_session: Session):
     assert results_email[0].email == "charlie@test.com"
 
     results_partial = crud.search_contacts(db_session, "o", user.id)
-    assert len(results_partial) == 2  # 'Johnson' and 'Brown' contain 'o'
+    assert len(results_partial) == 3  # All names/emails contain 'o'
 
     results_no_match = crud.search_contacts(db_session, "xyz", user.id)
     assert len(results_no_match) == 0

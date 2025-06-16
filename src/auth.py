@@ -34,12 +34,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 async def get_redis_client() -> redis.Redis:
     """
     Отримує асинхронний клієнт Redis.
-
-    Ця функція є залежністю FastAPI і повертає інстанс Redis клієнта.
     """
     redis_host = os.getenv("REDIS_HOST", "localhost")
-    redis_port = int(os.getenv("REDIS_PORT", 6379))
-    return redis.Redis(host=redis_host, port=redis_port, db=0, encoding="utf-8", decode_responses=True)
+    redis_port = os.getenv("REDIS_PORT", "6379")
+    redis_url = f"redis://{redis_host}:{redis_port}"
+
+    print(f"🔌 Connecting to Redis at: {redis_url}")
+    return await redis.from_url(
+        redis_url,
+        encoding="utf-8",
+        decode_responses=True
+    )
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Перевіряє відповідність пароля хешу."""

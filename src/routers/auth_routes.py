@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta, datetime
 import json
 import redis.asyncio as redis
+import os
 
 from src import schemas, crud, deps, models
 from src.auth import (
@@ -56,14 +57,18 @@ async def signup(body: schemas.UserCreate, background_tasks: BackgroundTasks, re
 
     base_url = str(request.url).replace(request.url.path, "")
 
-    background_tasks.add_task(
-        send_email,
-        new_user.email,
-        new_user.email,
-        base_url,
-        token_verification,
-        subject="Confirm your email for Contacts App"
-    )
+    # Only send confirmation email if not in testing
+    if not os.getenv("TESTING"):
+        background_tasks.add_task(
+            send_email,
+            new_user.email,
+            new_user.email,
+            base_url,
+            token_verification,
+            subject="Confirm your email for Contacts App"
+        )
+    else:
+        print("✅ MOCK EMAIL: confirmation email would be sent.")
     return new_user
 
 
@@ -190,27 +195,27 @@ async def request_reset_password(
         dict: Повідомлення про успішне відправлення листа.
     """
     user = crud.get_user_by_email(db, body.email)
-    if user is None:
-        return {"message": "If a user with that email exists, a password reset link has been sent."}
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Not Found")
 
     if not user.confirmed:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email not confirmed. Please confirm your email first.",
-        )
+        raise HTTPException(status_code=403, detail="Email not confirmed. Please confirm your email first.")
 
     token_reset = create_password_reset_token({"sub": user.email})
 
     base_url = str(request.url).replace(request.url.path, "")
 
-    background_tasks.add_task(
-        send_email,
-        user.email,
-        user.email,
-        base_url,
-        token_reset,
-        subject="Password Reset Request"
-    )
+    if not os.getenv("TESTING"):
+        background_tasks.add_task(
+            send_email,
+            user.email,
+            user.email,
+            base_url,
+            token_reset,
+            subject="Password Reset Request"
+        )
+
     return {"message": "If a user with that email exists and is confirmed, a password reset link has been sent."}
 
 
@@ -258,3 +263,37 @@ async def reset_password(
     await r.delete(f"user:{user.email}")
 
     return {"message": "Password has been successfully reset."}
+
+@router.post("/request_email_confirmation", status_code=status.HTTP_200_OK)
+async def request_email_confirmation(
+        body: schemas.RequestEmail,
+        background_tasks: BackgroundTasks,
+        request: Request,
+        db: Session = Depends(deps.get_db)
+):
+    """
+    Повторно надсилає лист для підтвердження електронної пошти.
+    """
+    user = crud.get_user_by_email(db, body.email)
+    if user is None:
+        raise HTTPException(status_code=404, detail="Not Found")
+
+    if user.confirmed:
+        raise HTTPException(status_code=409, detail="Your email is already confirmed.")
+
+    token_verification = create_email_verification_token({"sub": user.email})
+    base_url = str(request.url).replace(request.url.path, "")
+
+    if not os.getenv("TESTING"):
+        background_tasks.add_task(
+            send_email,
+            user.email,
+            user.email,
+            base_url,
+            token_verification,
+            subject="Confirm your email for Contacts App"
+        )
+    else:
+        print("✅ MOCK EMAIL: confirmation email would be sent.")
+    return {"message": "Confirmation email sent."}
+

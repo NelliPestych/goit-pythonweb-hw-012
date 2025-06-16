@@ -11,7 +11,7 @@ from src.auth import get_password_hash, verify_password # Додано verify_pa
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
-from src.models import UserRole
+from src.models import UserRole, Contact
 
 def create_user(db: Session, user: schemas.UserCreate) -> models.User:
     """Створює нового користувача в базі даних."""
@@ -51,9 +51,11 @@ def create_contact(db: Session, contact: schemas.ContactCreate, user_id: int) ->
     db.refresh(db_contact)
     return db_contact
 
-def get_contacts(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[models.Contact]:
-    """Отримує список контактів для вказаного користувача з пагінацією."""
-    return db.query(models.Contact).filter(models.Contact.user_id == user_id).offset(skip).limit(limit).all()
+def get_contacts(db: Session, user_id: int | None = None, skip: int = 0, limit: int = 100):
+    query = db.query(Contact)
+    if user_id is not None:
+        query = query.filter(Contact.user_id == user_id)
+    return query.offset(skip).limit(limit).all()
 
 def get_contact(db: Session, contact_id: int, user_id: int) -> Optional[models.Contact]:
     """Отримує конкретний контакт за ID для вказаного користувача."""
@@ -118,3 +120,9 @@ def upcoming_birthdays(db: Session, user_id: int) -> List[models.Contact]:
     # Сортуємо за днем народження для послідовності
     upcoming_contacts.sort(key=lambda c: c.birthday.month * 100 + c.birthday.day)
     return upcoming_contacts
+
+def confirm_user_email(db: Session, user: models.User):
+    user.confirmed = True
+    db.commit()
+    db.refresh(user)
+    return user

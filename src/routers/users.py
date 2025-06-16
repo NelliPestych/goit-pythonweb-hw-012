@@ -11,6 +11,7 @@ import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
 import os
+from typing import Optional
 
 load_dotenv()
 
@@ -46,7 +47,7 @@ async def read_users_me(current_user: models.User = Depends(get_current_user)):
 
 @router.patch("/avatar", response_model=schemas.UserOut)
 async def update_avatar(
-    file: UploadFile = File(...),
+    file: Optional[UploadFile] = File(None),
     current_user: models.User = Depends(get_current_admin_user),
     db: Session = Depends(deps.get_db)
 ):
@@ -72,6 +73,9 @@ async def update_avatar(
     Returns:
         schemas.UserOut: Оновлений об'єкт користувача з новим URL аватара.
     """
+    if not file:
+        raise HTTPException(status_code=422, detail="Avatar file is required.")
+
     print(f"Attempting to upload avatar for user ID: {current_user.id}")
     try:
         r = cloudinary.uploader.upload(file.file, folder="avatars", public_id=f"avatar_{current_user.id}", overwrite=True)

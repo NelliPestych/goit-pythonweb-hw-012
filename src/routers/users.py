@@ -92,3 +92,7 @@ async def update_avatar(
     except Exception as e:
         print(f"An unexpected error occurred during avatar upload: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal server error: {e}")
+
+@router.patch("/admin_only")
+async def admin_only_endpoint(current_user: models.User = Depends(get_current_admin_user)):
+    return {"message": "You are an admin"}

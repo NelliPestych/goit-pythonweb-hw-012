@@ -32,6 +32,6 @@ def create_db_and_tables():
     """
     Створює всі таблиці в базі даних, визначені через Base.metadata.
     """
-    from app import models
+    from src import models
     Base.metadata.create_all(bind=engine)
     print("Database tables created successfully from create_db_and_tables.")

@@ -1,4 +1,4 @@
-# app/crud.py
+# src/crud.py
 """
 Модуль, що містить функції для виконання CRUD-операцій
 (Create, Read, Update, Delete) з даними в базі даних.
@@ -6,12 +6,12 @@
 
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_ # Додано or_ для функції пошуку
-from app import models, schemas
-from app.auth import get_password_hash, verify_password # Додано verify_password для тестування
+from src import models, schemas
+from src.auth import get_password_hash, verify_password # Додано verify_password для тестування
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
-from app.models import UserRole
+from src.models import UserRole
 
 def create_user(db: Session, user: schemas.UserCreate) -> models.User:
     """Створює нового користувача в базі даних."""

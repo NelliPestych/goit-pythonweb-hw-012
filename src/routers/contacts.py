@@ -8,8 +8,8 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from app import schemas, crud, deps, models
-from app.auth import get_current_user
+from src import schemas, crud, deps, models
+from src.auth import get_current_user
 
 router = APIRouter(prefix="/contacts", tags=["Contacts"])
 

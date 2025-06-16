@@ -1,8 +1,8 @@
 """
-Модуль для модульних тестів CRUD-операцій, визначених у app/crud.py.
+Модуль для модульних тестів CRUD-операцій, визначених у src/crud.py.
 """
 
-from app import crud, schemas, models
+from src import crud, schemas, models
 from datetime import date, timedelta
 from sqlalchemy.orm import Session
 import pytest
@@ -45,7 +45,7 @@ def test_update_user_confirmation(db_session: Session):
     user = crud.create_user(db_session, user_data)
     assert user.confirmed is False
 
-    crud.confirm_user_email(db_session, user)
+    # crud.confirm_user_email(db_session, user)
     assert user.confirmed is True
     db_session.refresh(user)
     assert user.confirmed is True
@@ -63,7 +63,7 @@ def test_create_contact(db_session: Session):
         last_name="Doe",
         email="john.doe@example.com",
         phone="1234567890",
-        birthday=date(1990, 5, 15),
+        birthday="1990-05-20",
         additional_info="Some info"
     )
     contact = crud.create_contact(db_session, contact_data, user.id)
@@ -78,8 +78,8 @@ def test_get_contacts(db_session: Session):
     """
     Тестує отримання списку контактів.
     """
-    user1 = crud.create_user(db_session, schemas.UserCreate(email="user1@example.com", password="pass"))
-    user2 = crud.create_user(db_session, schemas.UserCreate(email="user2@example.com", password="pass"))
+    user1 = crud.create_user(db_session, schemas.UserCreate(email="user1@example.com", password="password"))
+    user2 = crud.create_user(db_session, schemas.UserCreate(email="user2@example.com", password="password"))
 
     crud.create_contact(db_session, schemas.ContactCreate(first_name="A", last_name="B", email="a@b.com", phone="1",
                                                           birthday=date(1990, 1, 1)), user1.id)
@@ -104,7 +104,7 @@ def test_get_contact(db_session: Session):
     """
     Тестує отримання конкретного контакту за ID.
     """
-    user = crud.create_user(db_session, schemas.UserCreate(email="get_contact@example.com", password="pass"))
+    user = crud.create_user(db_session, schemas.UserCreate(email="get_contact@example.com", password="password"))
     contact_data = schemas.ContactCreate(first_name="Get", last_name="Me", email="get@me.com", phone="123",
                                          birthday=date(1990, 1, 1))
     created_contact = crud.create_contact(db_session, contact_data, user.id)
@@ -113,7 +113,7 @@ def test_get_contact(db_session: Session):
     assert retrieved_contact.id == created_contact.id
     assert retrieved_contact.email == "get@me.com"
 
-    other_user = crud.create_user(db_session, schemas.UserCreate(email="other@example.com", password="pass"))
+    other_user = crud.create_user(db_session, schemas.UserCreate(email="other@example.com", password="password"))
     unauthorized_contact = crud.get_contact(db_session, created_contact.id, other_user.id)
     assert unauthorized_contact is None
 
@@ -125,7 +125,7 @@ def test_update_contact(db_session: Session):
     """
     Тестує оновлення існуючого контакту.
     """
-    user = crud.create_user(db_session, schemas.UserCreate(email="update_user@example.com", password="pass"))
+    user = crud.create_user(db_session, schemas.UserCreate(email="update_user@example.com", password="password"))
     contact_data = schemas.ContactCreate(first_name="Old", last_name="Name", email="old@email.com", phone="111",
                                          birthday=date(1990, 1, 1))
     contact = crud.create_contact(db_session, contact_data, user.id)
@@ -139,7 +139,7 @@ def test_update_contact(db_session: Session):
     assert updated_contact.first_name == "Old"
     assert updated_contact.additional_info == "Updated info"
 
-    other_user = crud.create_user(db_session, schemas.UserCreate(email="attacker@example.com", password="pass"))
+    other_user = crud.create_user(db_session, schemas.UserCreate(email="attacker@example.com", password="password"))
     unauthorized_update = crud.update_contact(db_session, contact.id, other_user.id, update_data)
     assert unauthorized_update is None
 
@@ -148,7 +148,7 @@ def test_delete_contact(db_session: Session):
     """
     Тестує видалення контакту.
     """
-    user = crud.create_user(db_session, schemas.UserCreate(email="delete_user@example.com", password="pass"))
+    user = crud.create_user(db_session, schemas.UserCreate(email="delete_user@example.com", password="password"))
     contact_data = schemas.ContactCreate(first_name="Delete", last_name="Me", email="delete@me.com", phone="000",
                                          birthday=date(1990, 1, 1))
     contact = crud.create_contact(db_session, contact_data, user.id)
@@ -158,7 +158,7 @@ def test_delete_contact(db_session: Session):
 
     assert crud.get_contact(db_session, contact.id, user.id) is None
 
-    other_user = crud.create_user(db_session, schemas.UserCreate(email="other_del@example.com", password="pass"))
+    other_user = crud.create_user(db_session, schemas.UserCreate(email="other_del@example.com", password="password"))
     unauthorized_delete = crud.delete_contact(db_session, contact.id, other_user.id)
     assert unauthorized_delete is None
 
@@ -170,7 +170,7 @@ def test_search_contacts(db_session: Session):
     """
     Тестує пошук контактів за різними критеріями.
     """
-    user = crud.create_user(db_session, schemas.UserCreate(email="search_user@example.com", password="pass"))
+    user = crud.create_user(db_session, schemas.UserCreate(email="search_user@example.com", password="password"))
     crud.create_contact(db_session,
                         schemas.ContactCreate(first_name="Alice", last_name="Smith", email="alice@example.com",
                                               phone="1", birthday=date(1990, 1, 1)), user.id)
@@ -204,7 +204,7 @@ def test_upcoming_birthdays(db_session: Session):
     """
     Тестує функцію отримання майбутніх днів народження.
     """
-    user = crud.create_user(db_session, schemas.UserCreate(email="bday_user@example.com", password="pass"))
+    user = crud.create_user(db_session, schemas.UserCreate(email="bday_user@example.com", password="password"))
 
     # Контакт з днем народження сьогодні
     crud.create_contact(db_session, schemas.ContactCreate(first_name="Today", last_name="Bday", email="today@bday.com",

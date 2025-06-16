@@ -12,15 +12,15 @@ from datetime import timedelta, datetime
 import json
 import redis.asyncio as redis
 
-from app import schemas, crud, deps, models
-from app.auth import (
+from src import schemas, crud, deps, models
+from src.auth import (
     create_email_verification_token, decode_email_verification_token,
     verify_password, create_access_token, get_current_user,
     get_password_hash, create_password_reset_token, decode_password_reset_token,
     get_redis_client, USER_CACHE_EXPIRE_MINUTES,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
-from app.email import send_email
+from src.email import send_email
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 

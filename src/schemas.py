@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date, datetime
 from typing import Optional
-from app.models import UserRole
+from src.models import UserRole
 
 class ContactBase(BaseModel):
     first_name: str

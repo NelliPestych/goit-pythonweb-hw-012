@@ -1,4 +1,4 @@
-# app/auth.py
+# src/auth.py
 """
 Модуль для управління аутентифікацією та авторизацією користувачів,
 включаючи кешування даних користувачів за допомогою Redis.
@@ -14,7 +14,7 @@ from passlib.context import CryptContext
 from dotenv import load_dotenv
 import os
 from sqlalchemy.orm import Session
-from app import models, deps
+from src import models, deps
 import json
 import redis.asyncio as redis
 

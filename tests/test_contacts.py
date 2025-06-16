@@ -5,8 +5,8 @@
 
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from app import schemas, crud, models
-from app.auth import get_password_hash, create_access_token
+from src import schemas, crud, models
+from src.auth import get_password_hash, create_access_token
 import pytest
 from datetime import date, timedelta
 from unittest.mock import AsyncMock, patch

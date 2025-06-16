@@ -31,16 +31,16 @@ services:
       alembic upgrade head
       "
     volumes:
-      - .:/app
+      - .:/src
     depends_on:
       db:
         condition: service_healthy
 
   web:
     build: .
-    command: /app/wait_for_db.sh db 5432 uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: /src/wait_for_db.sh db 5432 uvicorn src.main:src --host 0.0.0.0 --port 8000
     volumes:
-      - .:/app
+      - .:/src
     ports:
       - "8000:8000"
     depends_on:

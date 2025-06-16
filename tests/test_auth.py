@@ -1,18 +1,18 @@
 # tests/test_auth.py
 """
 Модуль для інтеграційних тестів маршрутів аутентифікації та
-модуля app.auth.
+модуля src.auth.
 """
 
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from app import schemas, models
-from app.auth import get_password_hash, create_email_verification_token, create_password_reset_token, decode_password_reset_token
+from src import schemas, models
+from src.auth import get_password_hash, create_email_verification_token, create_password_reset_token, decode_password_reset_token
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, patch, MagicMock
 import json
-from app import crud
+from src import crud
 from datetime import timedelta, datetime, timezone # Додано timezone
 
 # Тести для /api/auth/signup

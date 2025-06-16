@@ -1,4 +1,4 @@
-# app/main.py
+# src/main.py
 """
 Головний файл застосунку Contacts App API.
 
@@ -17,8 +17,8 @@ import os
 # ВИДАЛЕНО: import time - більше не потрібен через видалення retry-логіки для БД
 # ВИДАЛЕНО: імпорти для створення таблиць та OperationalError, оскільки це обробляється db-init
 
-from app.routers import contacts, auth_routes, users # Перевірено: використовує auth_routes
-from app.database import SessionLocal # SessionLocal все ще потрібен для залежностей
+from src.routers import contacts, auth_routes, users # Перевірено: використовує auth_routes
+from src.database import SessionLocal # SessionLocal все ще потрібен для залежностей
 from fastapi.middleware.cors import CORSMiddleware
 
 

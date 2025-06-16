@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "app"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
 load_dotenv()
 

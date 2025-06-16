@@ -5,8 +5,8 @@
 
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.orm import Session
-from app import deps, crud, models, schemas
-from app.auth import get_current_user, get_current_admin_user
+from src import deps, crud, models, schemas
+from src.auth import get_current_user, get_current_admin_user
 import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv

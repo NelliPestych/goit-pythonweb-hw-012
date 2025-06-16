@@ -14,9 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./wait_for_db.sh /app/wait_for_db.sh
 
-RUN dos2unix /app/wait_for_db.sh
+RUN dos2unix /src/wait_for_db.sh
 
-RUN chmod +x /app/wait_for_db.sh
+RUN chmod +x /src/wait_for_db.sh
 
 COPY . .
 

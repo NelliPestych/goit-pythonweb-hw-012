@@ -5,8 +5,8 @@
 
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from app import schemas, crud, models
-from app.auth import get_password_hash, create_access_token
+from src import schemas, crud, models
+from src.auth import get_password_hash, create_access_token
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 import io # Для створення імітації файлу
@@ -210,12 +210,12 @@ async def test_get_current_admin_user_forbidden(client: TestClient, db_session: 
     # окрім як у test_auth.py, що є дещо заплутаним.
 
     # Якщо ми хочемо перевірити саме 403 Forbidden для *адмінського* маршруту, нам потрібно:
-    # 1. Створити такий маршрут у `app/routers/admin.py` (або `app/routers/users.py` якщо це ОК)
+    # 1. Створити такий маршрут у `src/routers/admin.py` (або `src/routers/users.py` якщо це ОК)
     #    Наприклад:
     #    @router.get("/admin_only", dependencies=[Depends(get_current_admin_user)])
     #    async def admin_only_endpoint():
     #        return {"message": "Welcome, Admin!"}
-    # 2. Включити цей роутер до app.main.py
+    # 2. Включити цей роутер до src.main.py
     # 3. Тоді перевіряти його.
 
     # Для збереження "нічого не ламати", я залишу цей тест як є, але зауважу, що його назва

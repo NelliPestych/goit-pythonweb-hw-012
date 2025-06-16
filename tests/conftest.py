@@ -93,11 +93,11 @@ def client(db_session: Session):
 @pytest.fixture(scope="function", autouse=True)
 def mock_send_email():
     """
-    Фікстура, що мокує функцію `send_email` у модулі `src.email`.
+    Фікстура, що мокує функцію `send_email` у модулі `src.email_utils`.
 
     Використовує `AsyncMock` для імітації асинхронної поведінки
     та `patch` для заміни реальної функції.
     `autouse=True` означає, що ця фікстура буде автоматично застосовуватися до всіх тестів.
     """
-    with patch("src.email.send_email", new_callable=AsyncMock) as mock_email:
+    with patch("src.email_utils.send_email", new_callable=AsyncMock) as mock_email:
         yield mock_email

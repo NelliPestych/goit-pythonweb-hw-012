@@ -20,7 +20,7 @@ from src.auth import (
     get_redis_client, USER_CACHE_EXPIRE_MINUTES,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
-from src.email import send_email
+from src.email_utils import send_email
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 

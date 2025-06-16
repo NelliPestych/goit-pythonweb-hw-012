@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import date, datetime
 from typing import Optional
 from app.models import UserRole
@@ -39,10 +39,16 @@ class UserBase(BaseModel):
     email: EmailStr
 
 class UserCreate(UserBase):
-    password: str
+    password: str = Field(min_length=6) # ДОДАНО: Валідація мінімальної довжини пароля
 
 class UserLogin(UserBase):
-    password: str
+    password: str = Field(min_length=6) # ДОДАНО: Валідація мінімальної довжини пароля
+
+# ДОДАНО: Нова схема для запиту скидання пароля, яка містить email та новий пароль
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6) # Це буде новий пароль
+
 
 class UserOut(UserBase):
     id: int
@@ -50,6 +56,7 @@ class UserOut(UserBase):
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     role: UserRole
+    avatar_url: Optional[str] = None # ДОДАНО: Аватар URL для виведення
 
     class Config:
         from_attributes = True
@@ -61,12 +68,6 @@ class UserOut(UserBase):
 class Token(BaseModel):
     access_token: str
     token_type: str
-    refresh_token: Optional[str] = None
-
 
 class RequestEmail(BaseModel):
     email: EmailStr
-
-class PasswordReset(BaseModel):
-    token: str
-    new_password: str

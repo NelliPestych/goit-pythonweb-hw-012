@@ -1,12 +1,13 @@
+# app/crud.py
 """
 Модуль, що містить функції для виконання CRUD-операцій
 (Create, Read, Update, Delete) з даними в базі даних.
 """
 
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, or_ # Додано or_ для функції пошуку
 from app import models, schemas
-from app.auth import get_password_hash
+from app.auth import get_password_hash, verify_password # Додано verify_password для тестування
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
@@ -39,7 +40,8 @@ def update_user_avatar(db: Session, user_id: int, avatar_url: str) -> Optional[m
         user.avatar_url = avatar_url
         db.commit()
         db.refresh(user)
-    return user
+        return user
+    return None
 
 def create_contact(db: Session, contact: schemas.ContactCreate, user_id: int) -> models.Contact:
     """Створює новий контакт для вказаного користувача."""
@@ -54,48 +56,45 @@ def get_contacts(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> 
     return db.query(models.Contact).filter(models.Contact.user_id == user_id).offset(skip).limit(limit).all()
 
 def get_contact(db: Session, contact_id: int, user_id: int) -> Optional[models.Contact]:
-    """Отримує один контакт за ID для вказаного користувача."""
-    return db.query(models.Contact).filter(
-        and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)
-    ).first()
+    """Отримує конкретний контакт за ID для вказаного користувача."""
+    return db.query(models.Contact).filter(and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)).first()
 
-
-def update_contact(db: Session, contact_id: int, contact: schemas.ContactUpdate, user_id: int) -> Optional[models.Contact]:
+def update_contact(db: Session, contact_id: int, user_id: int, contact: schemas.ContactUpdate) -> Optional[models.Contact]:
     """Оновлює існуючий контакт для вказаного користувача."""
-    db_contact = db.query(models.Contact).filter(
-        and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)
-    ).first()
+    db_contact = db.query(models.Contact).filter(and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)).first()
     if db_contact:
         for key, value in contact.model_dump(exclude_unset=True).items():
             setattr(db_contact, key, value)
         db.commit()
         db.refresh(db_contact)
-    return db_contact
+        return db_contact
+    return None
 
 def delete_contact(db: Session, contact_id: int, user_id: int) -> Optional[models.Contact]:
-    """Видаляє контакт за ID для вказаного користувача."""
-    db_contact = db.query(models.Contact).filter(
-        and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)
-    ).first()
+    """Видаляє контакт для вказаного користувача."""
+    db_contact = db.query(models.Contact).filter(and_(models.Contact.id == contact_id, models.Contact.user_id == user_id)).first()
     if db_contact:
         db.delete(db_contact)
         db.commit()
-    return db_contact
+        return db_contact
+    return None
 
 def search_contacts(db: Session, query: str, user_id: int) -> List[models.Contact]:
-    """Шукає контакти за ім'ям, прізвищем або email для вказаного користувача."""
+    """
+    Шукає контакти за ім'ям, прізвищем або email для вказаного користувача.
+    Пошук нечутливий до регістру.
+    """
     search_pattern = f"%{query.lower()}%"
     return db.query(models.Contact).filter(
         and_(
             models.Contact.user_id == user_id,
-            (
-                models.Contact.first_name.ilike(search_pattern) |
-                models.Contact.last_name.ilike(search_pattern) |
+            or_(
+                models.Contact.first_name.ilike(search_pattern),
+                models.Contact.last_name.ilike(search_pattern),
                 models.Contact.email.ilike(search_pattern)
             )
         )
     ).all()
-
 
 def upcoming_birthdays(db: Session, user_id: int) -> List[models.Contact]:
     """Отримує список контактів з днями народження, що наближаються (наступні 7 днів) для вказаного користувача."""
@@ -105,23 +104,17 @@ def upcoming_birthdays(db: Session, user_id: int) -> List[models.Contact]:
     contacts = db.query(models.Contact).filter(models.Contact.user_id == user_id).all()
 
     for contact in contacts:
-        print(f"DEBUG: Processing contact: ID={contact.id}")
-        print(f"DEBUG:   First Name: {contact.first_name} (Type: {type(contact.first_name)})")
-        print(f"DEBUG:   Last Name: {contact.last_name} (Type: {type(contact.last_name)})")
-        print(f"DEBUG:   Email: {contact.email} (Type: {type(contact.email)})")
-        print(f"DEBUG:   Phone: {contact.phone} (Type: {type(contact.phone)})")
-        print(f"DEBUG:   Birthday: {contact.birthday} (Type: {type(contact.birthday)})")
-        print(f"DEBUG:   Additional Info: {contact.additional_info} (Type: {type(contact.additional_info)})")
-        print(f"DEBUG:   Created At: {contact.created_at} (Type: {type(contact.created_at)})")
-        print(f"DEBUG:   Updated At: {contact.updated_at} (Type: {type(contact.updated_at)})")
-
-
         birthday_this_year = contact.birthday.replace(year=today.year)
-        if birthday_this_year < today:
-            birthday_this_year = contact.birthday.replace(year=today.year + 1)
 
-        delta = birthday_this_year - today
-        if 0 <= delta.days <= 7:
+        if birthday_this_year < today:
+            birthday_next_year = contact.birthday.replace(year=today.year + 1)
+            delta = (birthday_next_year - today).days
+        else:
+            delta = (birthday_this_year - today).days
+
+        if 0 <= delta <= 7:
             upcoming_contacts.append(contact)
 
+    # Сортуємо за днем народження для послідовності
+    upcoming_contacts.sort(key=lambda c: c.birthday.month * 100 + c.birthday.day)
     return upcoming_contacts

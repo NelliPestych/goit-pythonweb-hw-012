@@ -1,29 +1,29 @@
 API Reference
 =============
 
-.. automodule:: app.main
+.. automodule:: src.main
    :members:
 
 Authentication Endpoints
 ------------------------
 
-.. automodule:: app.routers.auth
+.. automodule:: src.routers.auth
    :members:
 
 Contacts Endpoints
 ------------------
 
-.. automodule:: app.routers.contacts
+.. automodule:: src.routers.contacts
    :members:
 
 Users Endpoints
 ---------------
 
-.. automodule:: app.routers.users
+.. automodule:: src.routers.users
    :members:
 
 CRUD Operations
 ---------------
 
-.. automodule:: app.crud
+.. automodule:: src.crud
    :members:

@@ -1,4 +1,3 @@
-# tests/test_auth.py
 """
 Модуль для інтеграційних тестів маршрутів аутентифікації та
 модуля src.auth.
@@ -15,7 +14,7 @@ import json
 from src.database import get_db
 from src import crud
 from src.auth import get_redis_client
-from datetime import timedelta, datetime, timezone # Додано timezone
+from datetime import timedelta, datetime, timezone
 import os
 
 @pytest.fixture
@@ -74,7 +73,7 @@ def test_login_user_unconfirmed(client: TestClient, db_session: Session):
     email = "unconfirmed@example.com"
     password = "UnconfirmedPass123"
     user_data = schemas.UserCreate(email=email, password=password)
-    crud.create_user(db_session, user_data) # Створено, але confirmed=False
+    crud.create_user(db_session, user_data)
 
     response = client.post(
         "/api/auth/login",
@@ -286,7 +285,7 @@ def test_reset_password_success(client: TestClient, db_session: Session, mock_se
     # Скидаємо пароль
     response = client.post(
         f"/api/auth/reset_password/{reset_token}",
-        json={"email": user_email, "password": new_password} # Використовуємо UserLogin схему, як у вашому коді
+        json={"email": user_email, "password": new_password} # Використовуємо UserLogin схему
     )
     assert response.status_code == 200
     assert response.json() == {"message": "Password has been successfully reset."}
@@ -448,4 +447,3 @@ async def test_get_current_user_from_db_and_cache_to_redis(client: TestClient, d
     assert response.status_code == 200
     assert response.json()["email"] == email
     mock_redis_instance.get.assert_called_once_with(f"user:{email}")
-    # mock_redis_instance.setex.assert_called_once() # Повинно викликатися, щоб зберегти в кеш

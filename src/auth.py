@@ -1,4 +1,3 @@
-# src/auth.py
 """
 Модуль для управління аутентифікацією та авторизацією користувачів,
 включаючи кешування даних користувачів за допомогою Redis.
@@ -34,6 +33,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 async def get_redis_client() -> redis.Redis:
     """
     Отримує асинхронний клієнт Redis.
+
+    Зчитує дані для підключення до Redis з змінних середовища REDIS_HOST та REDIS_PORT.
+
+    Returns:
+        redis.Redis: Асинхронний клієнт Redis.
     """
     redis_host = os.getenv("REDIS_HOST", "localhost")
     redis_port = os.getenv("REDIS_PORT", "6379")
@@ -47,15 +51,44 @@ async def get_redis_client() -> redis.Redis:
     )
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Перевіряє відповідність пароля хешу."""
+    """
+    Перевіряє відповідність наданого відкритого пароля його хешу.
+
+    Args:
+        plain_password (str): Пароль у відкритому вигляді.
+        hashed_password (str): Захешований пароль для порівняння.
+
+    Returns:
+        bool: True, якщо паролі збігаються, False в іншому випадку.
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
-    """Генерує хеш пароля."""
+    """
+    Генерує хеш для заданого пароля.
+
+    Args:
+        password (str): Пароль у відкритому вигляді.
+
+    Returns:
+        str: Захешований пароль.
+    """
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Створює JWT токен доступу."""
+    """
+    Створює JWT токен доступу.
+
+    Токен містить дані (наприклад, email користувача) та термін його дії.
+
+    Args:
+        data (dict): Дані, які потрібно закодувати в токен (наприклад, {"sub": "user_email"}).
+        expires_delta (Optional[timedelta]): Термін дії токена. Якщо None, використовується
+                                             значення за замовчуванням `ACCESS_TOKEN_EXPIRE_MINUTES`.
+
+    Returns:
+        str: Закодований JWT токен.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta # Use timezone.utc for consistency
@@ -66,7 +99,17 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 def create_email_verification_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Створює JWT токен для підтвердження електронної пошти."""
+    """
+    Створює JWT токен для підтвердження електронної пошти.
+
+    Args:
+        data (dict): Дані, які потрібно закодувати в токен (наприклад, {"sub": "user_email"}).
+        expires_delta (Optional[timedelta]): Термін дії токена. Якщо None, використовується
+                                             значення за замовчуванням `EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES`.
+
+    Returns:
+        str: Закодований JWT токен.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -77,7 +120,20 @@ def create_email_verification_token(data: dict, expires_delta: Optional[timedelt
     return encoded_jwt
 
 def decode_email_verification_token(token: str) -> str:
-    """Декодує JWT токен підтвердження електронної пошти."""
+    """
+    Декодує JWT токен підтвердження електронної пошти та повертає email.
+
+    Args:
+        token (str): Токен підтвердження електронної пошти.
+
+    Raises:
+        HTTPException:
+            - 400 BAD_REQUEST: Якщо токен недійсний, термін його дії минув,
+                               або відсутній "sub" (email) у корисній частині токена.
+
+    Returns:
+        str: Електронна пошта користувача з токена.
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
@@ -110,7 +166,7 @@ def create_password_reset_token(data: dict, expires_delta: Optional[timedelta] =
 
 def decode_password_reset_token(token: str) -> str:
     """
-    Декодує JWT токен скидання пароля.
+    Декодує JWT токен скидання пароля та повертає email.
 
     Args:
         token (str): Токен скидання пароля.
@@ -137,6 +193,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme),
                            r: redis.Redis = Depends(get_redis_client)) -> models.User:
     """
     Залежність FastAPI, що повертає поточного аутентифікованого користувача.
+
+    Спочатку намагається отримати користувача з кешу Redis. Якщо користувача немає в кеші,
+    отримує його з бази даних і кешує для майбутніх запитів.
 
     Args:
         token (str): JWT токен з заголовка авторизації.

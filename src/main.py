@@ -52,6 +52,10 @@ async def startup():
     Створення таблиць бази даних тепер відбувається перед запуском Uvicorn
     через сервіс `db-init` у docker-compose.
     """
+    if os.getenv("TESTING", "false").lower() == "true":
+        print("Skipping Redis init during testing.")
+        return
+
     redis_host = os.getenv("REDIS_HOST", "localhost")
     redis_port = int(os.getenv("REDIS_PORT", 6379))
     redis_client = Redis(host=redis_host, port=redis_port, db=0, encoding="utf-8", decode_responses=True)

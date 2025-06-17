@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch, MagicMock
 from src.main import app
 from src.deps import get_db
+from src.auth import get_redis_client
 
 # Встановлюємо змінну середовища TESTING для тестів
 os.environ["TESTING"] = "True"
@@ -38,13 +39,9 @@ def db_engine():
 
     Створює таблиці на початку тестової сесії та видаляє їх після завершення.
     """
-    print("DEBUG: Calling Base.metadata.create_all()...")
     Base.metadata.create_all(bind=engine)
-    print("DEBUG: Base.metadata.create_all() finished.")
     yield engine
-    print("DEBUG: Calling Base.metadata.drop_all()...")
     Base.metadata.drop_all(bind=engine)
-    print("DEBUG: Base.metadata.drop_all() finished.")
 
 
 @pytest.fixture(scope="function")
@@ -68,25 +65,28 @@ def client(db_session: Session):
     """
     Фікстура, що надає тестовий клієнт FastAPI з мокованими залежностями.
     """
-    print("DEBUG: Setting up client fixture...")
-
     def override_get_db():
         try:
             yield db_session
         finally:
             db_session.close()
 
+    # Створюємо мок Redis
     mock_redis_instance = MagicMock()
     mock_redis_instance.get = AsyncMock(return_value=None)
     mock_redis_instance.setex = AsyncMock(return_value=True)
     mock_redis_instance.delete = AsyncMock(return_value=1)
 
-    mock_get_redis_client_func = AsyncMock(return_value=mock_redis_instance)
+    async def override_get_redis_client():
+        return mock_redis_instance
 
+    # Переозначення залежностей
     app.dependency_overrides[get_db] = override_get_db
-    with patch("src.auth.get_redis_client", new=mock_get_redis_client_func):
-        with TestClient(app) as c:
-            yield c
+    app.dependency_overrides[get_redis_client] = override_get_redis_client
+
+    with TestClient(app) as c:
+        yield c
+
     app.dependency_overrides.clear()
 
 

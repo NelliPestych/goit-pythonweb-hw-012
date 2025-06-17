@@ -47,7 +47,7 @@ def test_create_user(mock_send_email: AsyncMock, client: TestClient, db_session:
     assert user_in_db.email == "test_register@example.com"
     assert user_in_db.confirmed is False
 
-    if not os.getenv("TESTING"):
+    if os.getenv("TESTING") == "false":
         mock_send_email.assert_awaited_once()
 
 def test_register_existing_user(client: TestClient, db_session: Session, mock_send_email: AsyncMock):

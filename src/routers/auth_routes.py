@@ -58,7 +58,7 @@ async def signup(body: schemas.UserCreate, background_tasks: BackgroundTasks, re
     base_url = str(request.url).replace(request.url.path, "")
 
     # Only send confirmation email if not in testing
-    if not os.getenv("TESTING"):
+    if os.getenv("TESTING") == "false":
         background_tasks.add_task(
             send_email,
             new_user.email,
@@ -206,7 +206,7 @@ async def request_reset_password(
 
     base_url = str(request.url).replace(request.url.path, "")
 
-    if not os.getenv("TESTING"):
+    if os.getenv("TESTING") == "false":
         background_tasks.add_task(
             send_email,
             user.email,
@@ -284,7 +284,7 @@ async def request_email_confirmation(
     token_verification = create_email_verification_token({"sub": user.email})
     base_url = str(request.url).replace(request.url.path, "")
 
-    if not os.getenv("TESTING"):
+    if os.getenv("TESTING") == "false":
         background_tasks.add_task(
             send_email,
             user.email,

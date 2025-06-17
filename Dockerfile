@@ -12,12 +12,12 @@ RUN apk update && apk add --no-cache \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./wait_for_db.sh /app/wait_for_db.sh
-
-RUN dos2unix /src/wait_for_db.sh
-
-RUN chmod +x /src/wait_for_db.sh
+COPY ./wait_for_db.sh ./wait_for_db.sh
+RUN dos2unix ./wait_for_db.sh
+RUN chmod +x ./wait_for_db.sh
 
 COPY . .
 
 EXPOSE 8000
+
+CMD ["sh", "-c", "./wait_for_db.sh && uvicorn src.main:app --host 0.0.0.0 --port 8000"]

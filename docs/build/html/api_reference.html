@@ -44,10 +44,158 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#authentication-endpoints">Authentication Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#contacts-endpoints">Contacts Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#users-endpoints">Users Endpoints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#crud-operations">CRUD Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.main">Main Application Endpoints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#initial-application-setup">Initial Application Setup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.main.startup"><code class="docutils literal notranslate"><span class="pre">startup()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#root-endpoint-for-api-status">Root Endpoint for API Status</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.main.read_root"><code class="docutils literal notranslate"><span class="pre">read_root()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.auth">Authentication Core Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.create_access_token"><code class="docutils literal notranslate"><span class="pre">create_access_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.create_email_verification_token"><code class="docutils literal notranslate"><span class="pre">create_email_verification_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.create_password_reset_token"><code class="docutils literal notranslate"><span class="pre">create_password_reset_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.decode_email_verification_token"><code class="docutils literal notranslate"><span class="pre">decode_email_verification_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.decode_password_reset_token"><code class="docutils literal notranslate"><span class="pre">decode_password_reset_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.get_current_admin_user"><code class="docutils literal notranslate"><span class="pre">get_current_admin_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.get_current_user"><code class="docutils literal notranslate"><span class="pre">get_current_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.get_password_hash"><code class="docutils literal notranslate"><span class="pre">get_password_hash()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.get_redis_client"><code class="docutils literal notranslate"><span class="pre">get_redis_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.auth.verify_password"><code class="docutils literal notranslate"><span class="pre">verify_password()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.routers.auth_routes">Authentication Endpoints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.auth_routes.confirm_email"><code class="docutils literal notranslate"><span class="pre">confirm_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.auth_routes.login"><code class="docutils literal notranslate"><span class="pre">login()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.auth_routes.read_users_me"><code class="docutils literal notranslate"><span class="pre">read_users_me()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.auth_routes.request_email_confirmation"><code class="docutils literal notranslate"><span class="pre">request_email_confirmation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.auth_routes.request_reset_password"><code class="docutils literal notranslate"><span class="pre">request_reset_password()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.auth_routes.reset_password"><code class="docutils literal notranslate"><span class="pre">reset_password()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.auth_routes.signup"><code class="docutils literal notranslate"><span class="pre">signup()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.routers.contacts">Contacts Endpoints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.contacts.birthdays"><code class="docutils literal notranslate"><span class="pre">birthdays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.contacts.create_contact"><code class="docutils literal notranslate"><span class="pre">create_contact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.contacts.delete_contact"><code class="docutils literal notranslate"><span class="pre">delete_contact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.contacts.read_all"><code class="docutils literal notranslate"><span class="pre">read_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.contacts.read_contact"><code class="docutils literal notranslate"><span class="pre">read_contact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.contacts.search_contacts"><code class="docutils literal notranslate"><span class="pre">search_contacts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.contacts.update_contact"><code class="docutils literal notranslate"><span class="pre">update_contact()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.routers.users">Users Endpoints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.users.admin_only_endpoint"><code class="docutils literal notranslate"><span class="pre">admin_only_endpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.users.read_users_me"><code class="docutils literal notranslate"><span class="pre">read_users_me()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.routers.users.update_avatar"><code class="docutils literal notranslate"><span class="pre">update_avatar()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.crud">CRUD Operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.confirm_user_email"><code class="docutils literal notranslate"><span class="pre">confirm_user_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.create_contact"><code class="docutils literal notranslate"><span class="pre">create_contact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.create_user"><code class="docutils literal notranslate"><span class="pre">create_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.delete_contact"><code class="docutils literal notranslate"><span class="pre">delete_contact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.get_contact"><code class="docutils literal notranslate"><span class="pre">get_contact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.get_contacts"><code class="docutils literal notranslate"><span class="pre">get_contacts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.get_user_by_email"><code class="docutils literal notranslate"><span class="pre">get_user_by_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.search_contacts"><code class="docutils literal notranslate"><span class="pre">search_contacts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.upcoming_birthdays"><code class="docutils literal notranslate"><span class="pre">upcoming_birthdays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.update_contact"><code class="docutils literal notranslate"><span class="pre">update_contact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.update_user_avatar"><code class="docutils literal notranslate"><span class="pre">update_user_avatar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.crud.update_user_confirmation"><code class="docutils literal notranslate"><span class="pre">update_user_confirmation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.database">Database Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.database.create_db_and_tables"><code class="docutils literal notranslate"><span class="pre">create_db_and_tables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.database.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.deps">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.deps.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.email_utils">Email Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.email_utils.send_email"><code class="docutils literal notranslate"><span class="pre">send_email()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.models.Contact"><code class="docutils literal notranslate"><span class="pre">Contact</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.models.Contact.owner"><code class="docutils literal notranslate"><span class="pre">Contact.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.models.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.models.User.contacts"><code class="docutils literal notranslate"><span class="pre">User.contacts</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.models.UserRole"><code class="docutils literal notranslate"><span class="pre">UserRole</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.models.UserRole.admin"><code class="docutils literal notranslate"><span class="pre">UserRole.admin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.models.UserRole.user"><code class="docutils literal notranslate"><span class="pre">UserRole.user</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.schemas">Schemas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.ContactBase"><code class="docutils literal notranslate"><span class="pre">ContactBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactBase.additional_info"><code class="docutils literal notranslate"><span class="pre">ContactBase.additional_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactBase.birthday"><code class="docutils literal notranslate"><span class="pre">ContactBase.birthday</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactBase.email"><code class="docutils literal notranslate"><span class="pre">ContactBase.email</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactBase.first_name"><code class="docutils literal notranslate"><span class="pre">ContactBase.first_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactBase.last_name"><code class="docutils literal notranslate"><span class="pre">ContactBase.last_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactBase.phone"><code class="docutils literal notranslate"><span class="pre">ContactBase.phone</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.ContactCreate"><code class="docutils literal notranslate"><span class="pre">ContactCreate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.ContactOut"><code class="docutils literal notranslate"><span class="pre">ContactOut</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactOut.Config"><code class="docutils literal notranslate"><span class="pre">ContactOut.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactOut.created_at"><code class="docutils literal notranslate"><span class="pre">ContactOut.created_at</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactOut.id"><code class="docutils literal notranslate"><span class="pre">ContactOut.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactOut.updated_at"><code class="docutils literal notranslate"><span class="pre">ContactOut.updated_at</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.ContactUpdate"><code class="docutils literal notranslate"><span class="pre">ContactUpdate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactUpdate.additional_info"><code class="docutils literal notranslate"><span class="pre">ContactUpdate.additional_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactUpdate.birthday"><code class="docutils literal notranslate"><span class="pre">ContactUpdate.birthday</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactUpdate.email"><code class="docutils literal notranslate"><span class="pre">ContactUpdate.email</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactUpdate.first_name"><code class="docutils literal notranslate"><span class="pre">ContactUpdate.first_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactUpdate.last_name"><code class="docutils literal notranslate"><span class="pre">ContactUpdate.last_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.ContactUpdate.phone"><code class="docutils literal notranslate"><span class="pre">ContactUpdate.phone</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.PasswordResetRequest"><code class="docutils literal notranslate"><span class="pre">PasswordResetRequest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.PasswordResetRequest.email"><code class="docutils literal notranslate"><span class="pre">PasswordResetRequest.email</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.RequestEmail"><code class="docutils literal notranslate"><span class="pre">RequestEmail</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.RequestEmail.email"><code class="docutils literal notranslate"><span class="pre">RequestEmail.email</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.Token"><code class="docutils literal notranslate"><span class="pre">Token</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.Token.access_token"><code class="docutils literal notranslate"><span class="pre">Token.access_token</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.Token.token_type"><code class="docutils literal notranslate"><span class="pre">Token.token_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.UserBase"><code class="docutils literal notranslate"><span class="pre">UserBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.UserBase.email"><code class="docutils literal notranslate"><span class="pre">UserBase.email</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.UserCreate"><code class="docutils literal notranslate"><span class="pre">UserCreate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.UserLogin"><code class="docutils literal notranslate"><span class="pre">UserLogin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.schemas.UserOut"><code class="docutils literal notranslate"><span class="pre">UserOut</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.UserOut.Config"><code class="docutils literal notranslate"><span class="pre">UserOut.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.UserOut.avatar_url"><code class="docutils literal notranslate"><span class="pre">UserOut.avatar_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.UserOut.confirmed"><code class="docutils literal notranslate"><span class="pre">UserOut.confirmed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.UserOut.created_at"><code class="docutils literal notranslate"><span class="pre">UserOut.created_at</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.UserOut.id"><code class="docutils literal notranslate"><span class="pre">UserOut.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.UserOut.role"><code class="docutils literal notranslate"><span class="pre">UserOut.role</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.schemas.UserOut.updated_at"><code class="docutils literal notranslate"><span class="pre">UserOut.updated_at</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -78,17 +226,1338 @@
              
   <section id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
-<section id="authentication-endpoints">
-<h2>Authentication Endpoints<a class="headerlink" href="#authentication-endpoints" title="Link to this heading"></a></h2>
+<section id="module-src.main">
+<span id="main-application-endpoints"></span><h2>Main Application Endpoints<a class="headerlink" href="#module-src.main" title="Link to this heading"></a></h2>
+<p>Головний файл застосунку Contacts App API.</p>
+<p>Цей модуль ініціалізує FastAPI додаток, підключається до бази даних,
+налаштовує маршрути, конфігурує CORS та реалізує обмеження швидкості запитів
+за допомогою Redis.</p>
+<section id="initial-application-setup">
+<h3>Initial Application Setup<a class="headerlink" href="#initial-application-setup" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.main.startup">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.main.</span></span><span class="sig-name descname"><span class="pre">startup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.main.startup" title="Link to this definition"></a></dt>
+<dd><p>Функція, що виконується під час запуску FastAPI застосунку.</p>
+<p>Ініціалізує з’єднання з Redis для використання FastAPILimiter
+для обмеження кількості запитів. Перевіряє змінну оточення
+“TESTING” для пропуску ініціалізації Redis під час тестування.
+Таблиці бази даних створюються за допомогою сервісу <cite>db-init</cite> у docker-compose,
+тому тут не викликається <cite>create_db_and_tables</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – Якщо виникає помилка під час підключення до Redis.
+    (Хоча в коді обробляється внутрішньо)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="contacts-endpoints">
-<h2>Contacts Endpoints<a class="headerlink" href="#contacts-endpoints" title="Link to this heading"></a></h2>
+<section id="root-endpoint-for-api-status">
+<h3>Root Endpoint for API Status<a class="headerlink" href="#root-endpoint-for-api-status" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.main.read_root">
+<span class="sig-prename descclassname"><span class="pre">src.main.</span></span><span class="sig-name descname"><span class="pre">read_root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.main.read_root" title="Link to this definition"></a></dt>
+<dd><p>Головний (кореневий) маршрут FastAPI застосунку.</p>
+<p>Повертає вітальне повідомлення API. Цей ендпоінт слугує для
+перевірки працездатності застосунку.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Словник з ключем “message” та вітальним текстом.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="users-endpoints">
-<h2>Users Endpoints<a class="headerlink" href="#users-endpoints" title="Link to this heading"></a></h2>
 </section>
-<section id="crud-operations">
-<h2>CRUD Operations<a class="headerlink" href="#crud-operations" title="Link to this heading"></a></h2>
+<section id="module-src.auth">
+<span id="authentication-core-functions"></span><h2>Authentication Core Functions<a class="headerlink" href="#module-src.auth" title="Link to this heading"></a></h2>
+<p>Модуль для управління аутентифікацією та авторизацією користувачів,
+включаючи кешування даних користувачів за допомогою Redis.
+Цей файл містить основні функції, що не є маршрутами FastAPI.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.create_access_token">
+<span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">create_access_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#create_access_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.create_access_token" title="Link to this definition"></a></dt>
+<dd><p>Створює JWT токен доступу.</p>
+<p>Токен містить дані (наприклад, email користувача) та термін його дії.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – Дані, які потрібно закодувати в токен (наприклад, {“sub”: “user_email”}).</p></li>
+<li><p><strong>expires_delta</strong> (<em>Optional</em><em>[</em><em>timedelta</em><em>]</em>) – Термін дії токена. Якщо None, використовується
+значення за замовчуванням <cite>ACCESS_TOKEN_EXPIRE_MINUTES</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Закодований JWT токен.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.create_email_verification_token">
+<span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">create_email_verification_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#create_email_verification_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.create_email_verification_token" title="Link to this definition"></a></dt>
+<dd><p>Створює JWT токен для підтвердження електронної пошти.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – Дані, які потрібно закодувати в токен (наприклад, {“sub”: “user_email”}).</p></li>
+<li><p><strong>expires_delta</strong> (<em>Optional</em><em>[</em><em>timedelta</em><em>]</em>) – Термін дії токена. Якщо None, використовується
+значення за замовчуванням <cite>EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Закодований JWT токен.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.create_password_reset_token">
+<span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">create_password_reset_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#create_password_reset_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.create_password_reset_token" title="Link to this definition"></a></dt>
+<dd><p>Створює JWT токен для скидання пароля.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – Дані, які потрібно закодувати в токен (наприклад, {“sub”: “user_email”}).</p></li>
+<li><p><strong>expires_delta</strong> (<em>Optional</em><em>[</em><em>timedelta</em><em>]</em>) – Термін дії токена. Якщо None, використовується
+значення за замовчуванням <cite>PASSWORD_RESET_TOKEN_EXPIRE_MINUTES</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Закодований JWT токен.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.decode_email_verification_token">
+<span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">decode_email_verification_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#decode_email_verification_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.decode_email_verification_token" title="Link to this definition"></a></dt>
+<dd><p>Декодує JWT токен підтвердження електронної пошти та повертає email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token</strong> (<em>str</em>) – Токен підтвердження електронної пошти.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>400 BAD_REQUEST: Якщо токен недійсний, термін його дії минув,
+                       або відсутній “sub” (email) у корисній частині токена.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Електронна пошта користувача з токена.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.decode_password_reset_token">
+<span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">decode_password_reset_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#decode_password_reset_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.decode_password_reset_token" title="Link to this definition"></a></dt>
+<dd><p>Декодує JWT токен скидання пароля та повертає email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token</strong> (<em>str</em>) – Токен скидання пароля.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>400 BAD_REQUEST: Якщо токен недійсний або термін його дії минув.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Електронна пошта користувача з токена.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.get_current_admin_user">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">get_current_admin_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#get_current_admin_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.get_current_admin_user" title="Link to this definition"></a></dt>
+<dd><p>Залежність, що повертає поточного адміністратора.</p>
+<p>Використовується для маршрутів, доступних лише адміністраторам.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>HTTPException</strong> – 403 FORBIDDEN, якщо користувач не є адміністратором.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Об’єкт поточного адміністратора.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.models.User" title="src.models.User">models.User</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.get_current_user">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">get_current_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#get_current_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.get_current_user" title="Link to this definition"></a></dt>
+<dd><p>Залежність FastAPI, що повертає поточного аутентифікованого користувача.</p>
+<p>Спочатку намагається отримати користувача з кешу Redis. Якщо користувача немає в кеші,
+отримує його з бази даних і кешує для майбутніх запитів.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<em>str</em>) – JWT токен з заголовка авторизації.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>r</strong> (<em>redis.Redis</em>) – Клієнт Redis для кешування.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>401 UNAUTHORIZED: Якщо токен недійсний, термін дії минув,
+                        або користувача не знайдено/не підтверджено.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Об’єкт поточного користувача.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#src.models.User" title="src.models.User">models.User</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.get_password_hash">
+<span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">get_password_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#get_password_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.get_password_hash" title="Link to this definition"></a></dt>
+<dd><p>Генерує хеш для заданого пароля.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>password</strong> (<em>str</em>) – Пароль у відкритому вигляді.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Захешований пароль.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.get_redis_client">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">get_redis_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#get_redis_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.get_redis_client" title="Link to this definition"></a></dt>
+<dd><p>Отримує асинхронний клієнт Redis.</p>
+<p>Зчитує дані для підключення до Redis з змінних середовища REDIS_HOST та REDIS_PORT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Асинхронний клієнт Redis.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>redis.Redis</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.auth.verify_password">
+<span class="sig-prename descclassname"><span class="pre">src.auth.</span></span><span class="sig-name descname"><span class="pre">verify_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plain_password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hashed_password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/auth.html#verify_password"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.auth.verify_password" title="Link to this definition"></a></dt>
+<dd><p>Перевіряє відповідність наданого відкритого пароля його хешу.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plain_password</strong> (<em>str</em>) – Пароль у відкритому вигляді.</p></li>
+<li><p><strong>hashed_password</strong> (<em>str</em>) – Захешований пароль для порівняння.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True, якщо паролі збігаються, False в іншому випадку.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.routers.auth_routes">
+<span id="authentication-endpoints"></span><h2>Authentication Endpoints<a class="headerlink" href="#module-src.routers.auth_routes" title="Link to this heading"></a></h2>
+<p>Модуль для управління аутентифікацією та авторизацією користувачів.</p>
+<p>Включає ендпоінти для реєстрації, входу, підтвердження електронної пошти
+та отримання інформації про поточного користувача.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.auth_routes.confirm_email">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.auth_routes.</span></span><span class="sig-name descname"><span class="pre">confirm_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.auth_routes.confirm_email" title="Link to this definition"></a></dt>
+<dd><p>Підтверджує електронну пошту користувача за допомогою токена верифікації.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<em>str</em>) – Токен верифікації, отриманий з посилання в електронному листі.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>400 BAD_REQUEST: Якщо токен недійсний або термін його дії минув.
+    - 404 NOT_FOUND: Якщо користувача з таким email не знайдено.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Повідомлення про успішне підтвердження електронної пошти або про вже підтверджену пошту.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.auth_routes.login">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.auth_routes.</span></span><span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.auth_routes.login" title="Link to this definition"></a></dt>
+<dd><p>Аутентифікує користувача та повертає JWT токен доступу.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>form_data</strong> (<em>OAuth2PasswordRequestForm</em>) – Дані форми для входу (username - email, password).</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>r</strong> (<em>redis.Redis</em>) – Клієнт Redis для кешування.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>401 UNAUTHORIZED: Якщо email або пароль некоректні, або email не підтверджений.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Об’єкт, що містить токен доступу та його тип.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#src.schemas.Token" title="src.schemas.Token">schemas.Token</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.auth_routes.read_users_me">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.auth_routes.</span></span><span class="sig-name descname"><span class="pre">read_users_me</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.auth_routes.read_users_me" title="Link to this definition"></a></dt>
+<dd><p>Отримує інформацію про поточного аутентифікованого користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Об’єкт поточного користувача, отриманий через залежність.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Об’єкт користувача з публічними даними.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.schemas.UserOut" title="src.schemas.UserOut">schemas.UserOut</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.auth_routes.request_email_confirmation">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.auth_routes.</span></span><span class="sig-name descname"><span class="pre">request_email_confirmation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.auth_routes.request_email_confirmation" title="Link to this definition"></a></dt>
+<dd><p>Повторно надсилає лист для підтвердження електронної пошти.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>body</strong> (<a class="reference internal" href="#src.schemas.RequestEmail" title="src.schemas.RequestEmail"><em>schemas.RequestEmail</em></a>) – Об’єкт, що містить email користувача.</p></li>
+<li><p><strong>background_tasks</strong> (<em>BackgroundTasks</em>) – Завдання для фонової відправки email.</p></li>
+<li><p><strong>request</strong> (<em>Request</em>) – Об’єкт запиту для формування посилання.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>404 NOT_FOUND: Якщо користувача з таким email не знайдено.
+    - 409 CONFLICT: Якщо email вже підтверджений.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Повідомлення про успішне відправлення листа підтвердження.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.auth_routes.request_reset_password">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.auth_routes.</span></span><span class="sig-name descname"><span class="pre">request_reset_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.auth_routes.request_reset_password" title="Link to this definition"></a></dt>
+<dd><p>Запитує скидання пароля для користувача.</p>
+<p>Генерує токен скидання пароля та надсилає його на електронну пошту користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>body</strong> (<a class="reference internal" href="#src.schemas.RequestEmail" title="src.schemas.RequestEmail"><em>schemas.RequestEmail</em></a>) – Об’єкт, що містить email користувача.</p></li>
+<li><p><strong>background_tasks</strong> (<em>BackgroundTasks</em>) – Завдання для фонової відправки email.</p></li>
+<li><p><strong>request</strong> (<em>Request</em>) – Об’єкт запиту для формування посилання.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>404 NOT_FOUND: Якщо користувача з таким email не знайдено.
+    - 403 FORBIDDEN: Якщо email не підтверджений (щоб уникнути спаму).</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Повідомлення про успішне відправлення листа.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.auth_routes.reset_password">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.auth_routes.</span></span><span class="sig-name descname"><span class="pre">reset_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.auth_routes.reset_password" title="Link to this definition"></a></dt>
+<dd><p>Скидає пароль користувача за допомогою токена скидання пароля.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<em>str</em>) – Токен скидання пароля.</p></li>
+<li><p><strong>body</strong> (<a class="reference internal" href="#src.schemas.UserLogin" title="src.schemas.UserLogin"><em>schemas.UserLogin</em></a>) – Об’єкт, що містить email та новий пароль.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>r</strong> (<em>redis.Redis</em>) – Клієнт Redis для очищення кешу користувача.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>400 BAD_REQUEST: Якщо токен недійсний або термін його дії минув,
+                       або email у токені не збігається з наданим.
+    - 404 NOT_FOUND: Якщо користувача з таким email не знайдено.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Повідомлення про успішне скидання пароля.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.auth_routes.signup">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.auth_routes.</span></span><span class="sig-name descname"><span class="pre">signup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.auth_routes.signup" title="Link to this definition"></a></dt>
+<dd><p>Реєструє нового користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>body</strong> (<a class="reference internal" href="#src.schemas.UserCreate" title="src.schemas.UserCreate"><em>schemas.UserCreate</em></a>) – Дані для створення користувача (email, password).</p></li>
+<li><p><strong>background_tasks</strong> (<em>BackgroundTasks</em>) – Завдання для фонового виконання (відправка email).</p></li>
+<li><p><strong>request</strong> (<em>Request</em>) – Об’єкт запиту для формування посилання підтвердження.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>409 CONFLICT: Якщо користувач з таким email вже існує.
+    - 500 INTERNAL_SERVER_ERROR: Якщо не вдалося створити користувача.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Створений об’єкт користувача (без хешованого пароля).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#src.schemas.UserOut" title="src.schemas.UserOut">schemas.UserOut</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.routers.contacts">
+<span id="contacts-endpoints"></span><h2>Contacts Endpoints<a class="headerlink" href="#module-src.routers.contacts" title="Link to this heading"></a></h2>
+<p>Модуль, що визначає маршрути API для управління контактами.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.contacts.birthdays">
+<span class="sig-prename descclassname"><span class="pre">src.routers.contacts.</span></span><span class="sig-name descname"><span class="pre">birthdays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.contacts.birthdays" title="Link to this definition"></a></dt>
+<dd><p>Отримує список контактів поточного користувача з майбутніми днями народження
+(у наступні 7 днів).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний автентифікований користувач.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Список контактів з майбутніми днями народження.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.schemas.ContactOut" title="src.schemas.ContactOut">schemas.ContactOut</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.contacts.create_contact">
+<span class="sig-prename descclassname"><span class="pre">src.routers.contacts.</span></span><span class="sig-name descname"><span class="pre">create_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.contacts.create_contact" title="Link to this definition"></a></dt>
+<dd><p>Створює новий контакт для поточного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contact</strong> (<a class="reference internal" href="#src.schemas.ContactCreate" title="src.schemas.ContactCreate"><em>schemas.ContactCreate</em></a>) – Дані нового контакту.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний автентифікований користувач.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Створений контакт.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.schemas.ContactOut" title="src.schemas.ContactOut">schemas.ContactOut</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.contacts.delete_contact">
+<span class="sig-prename descclassname"><span class="pre">src.routers.contacts.</span></span><span class="sig-name descname"><span class="pre">delete_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.contacts.delete_contact" title="Link to this definition"></a></dt>
+<dd><p>Видаляє контакт за його ID для поточного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contact_id</strong> (<em>int</em>) – ID контакту для видалення.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний автентифікований користувач.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – 404 NOT_FOUND, якщо контакт не знайдено.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Повідомлення про успішне видалення контакту.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.contacts.read_all">
+<span class="sig-prename descclassname"><span class="pre">src.routers.contacts.</span></span><span class="sig-name descname"><span class="pre">read_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.contacts.read_all" title="Link to this definition"></a></dt>
+<dd><p>Отримує список усіх контактів поточного користувача з пагінацією.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skip</strong> (<em>int</em>) – Кількість записів для пропуску.</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – Максимальна кількість записів для повернення.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний автентифікований користувач.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Список контактів.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.schemas.ContactOut" title="src.schemas.ContactOut">schemas.ContactOut</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.contacts.read_contact">
+<span class="sig-prename descclassname"><span class="pre">src.routers.contacts.</span></span><span class="sig-name descname"><span class="pre">read_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.contacts.read_contact" title="Link to this definition"></a></dt>
+<dd><p>Отримує один контакт за його ID для поточного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contact_id</strong> (<em>int</em>) – ID контакту.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний автентифікований користувач.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – 404 NOT_FOUND, якщо контакт не знайдено.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Знайдений контакт.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#src.schemas.ContactOut" title="src.schemas.ContactOut">schemas.ContactOut</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.contacts.search_contacts">
+<span class="sig-prename descclassname"><span class="pre">src.routers.contacts.</span></span><span class="sig-name descname"><span class="pre">search_contacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.contacts.search_contacts" title="Link to this definition"></a></dt>
+<dd><p>Шукає контакти поточного користувача за ім’ям, прізвищем або email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – Рядок для пошуку.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний автентифікований користувач.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Список знайдених контактів.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.schemas.ContactOut" title="src.schemas.ContactOut">schemas.ContactOut</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.contacts.update_contact">
+<span class="sig-prename descclassname"><span class="pre">src.routers.contacts.</span></span><span class="sig-name descname"><span class="pre">update_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.contacts.update_contact" title="Link to this definition"></a></dt>
+<dd><p>Оновлює існуючий контакт за його ID для поточного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contact_id</strong> (<em>int</em>) – ID контакту для оновлення.</p></li>
+<li><p><strong>contact</strong> (<a class="reference internal" href="#src.schemas.ContactUpdate" title="src.schemas.ContactUpdate"><em>schemas.ContactUpdate</em></a>) – Оновлені дані контакту.</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний автентифікований користувач.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – 404 NOT_FOUND, якщо контакт не знайдено.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Оновлений контакт.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#src.schemas.ContactOut" title="src.schemas.ContactOut">schemas.ContactOut</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.routers.users">
+<span id="users-endpoints"></span><h2>Users Endpoints<a class="headerlink" href="#module-src.routers.users" title="Link to this heading"></a></h2>
+<p>Модуль для управління операціями, пов’язаними з користувачами,
+такими як оновлення аватара та отримання інформації про поточного користувача.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.users.admin_only_endpoint">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.users.</span></span><span class="sig-name descname"><span class="pre">admin_only_endpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.users.admin_only_endpoint" title="Link to this definition"></a></dt>
+<dd><p>Приклад ендпоінту, доступного лише адміністраторам.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний аутентифікований користувач (гарантовано адміністратор).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Повідомлення про успішний доступ.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.users.read_users_me">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.users.</span></span><span class="sig-name descname"><span class="pre">read_users_me</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.users.read_users_me" title="Link to this definition"></a></dt>
+<dd><p>Отримує інформацію про поточного аутентифікованого користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний аутентифікований користувач, отриманий з токена.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Схема даних поточного користувача.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.schemas.UserOut" title="src.schemas.UserOut">schemas.UserOut</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.routers.users.update_avatar">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.routers.users.</span></span><span class="sig-name descname"><span class="pre">update_avatar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.File</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">fastapi.Depends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.routers.users.update_avatar" title="Link to this definition"></a></dt>
+<dd><p>Оновлює аватар поточного користувача.</p>
+<p>Ця операція доступна лише адміністраторам.</p>
+<p>Завантажує зображення на Cloudinary та зберігає URL аватара в базі даних користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> (<em>UploadFile</em>) – Файл зображення для завантаження.</p></li>
+<li><p><strong>current_user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Поточний аутентифікований користувач (гарантовано адміністратор).</p></li>
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>422 UNPROCESSABLE_ENTITY: Якщо файл аватара не надано.
+    - 403 FORBIDDEN: Якщо користувач не є адміністратором (обробляється залежністю).
+    - 404 NOT_FOUND: Якщо користувача не знайдено в базі даних.
+    - 500 INTERNAL_SERVER_ERROR: Якщо сталася помилка під час завантаження на Cloudinary
+                                 або інша внутрішня помилка сервера.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Оновлений об’єкт користувача з новим URL аватара.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#src.schemas.UserOut" title="src.schemas.UserOut">schemas.UserOut</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.crud">
+<span id="crud-operations"></span><h2>CRUD Operations<a class="headerlink" href="#module-src.crud" title="Link to this heading"></a></h2>
+<p>Модуль, що містить функції для виконання CRUD-операцій
+(Create, Read, Update, Delete) з даними в базі даних.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.confirm_user_email">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">confirm_user_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#confirm_user_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.confirm_user_email" title="Link to this definition"></a></dt>
+<dd><p>Підтверджує електронну пошту користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Об’єкт користувача, чию пошту потрібно підтвердити.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Оновлений об’єкт користувача з підтвердженим статусом.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.models.User" title="src.models.User">models.User</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.create_contact">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">create_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#create_contact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.create_contact" title="Link to this definition"></a></dt>
+<dd><p>Створює новий контакт для вказаного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>contact</strong> (<a class="reference internal" href="#src.schemas.ContactCreate" title="src.schemas.ContactCreate"><em>schemas.ContactCreate</em></a>) – Схема даних для створення контакту.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – ID користувача, якому належить контакт.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Створений об’єкт контакту.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.models.Contact" title="src.models.Contact">models.Contact</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.create_user">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">create_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#create_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.create_user" title="Link to this definition"></a></dt>
+<dd><p>Створює нового користувача в базі даних.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>user</strong> (<a class="reference internal" href="#src.schemas.UserCreate" title="src.schemas.UserCreate"><em>schemas.UserCreate</em></a>) – Схема даних для створення користувача.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Створений об’єкт користувача.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.models.User" title="src.models.User">models.User</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.delete_contact">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">delete_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#delete_contact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.delete_contact" title="Link to this definition"></a></dt>
+<dd><p>Видаляє контакт для вказаного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>contact_id</strong> (<em>int</em>) – ID контакту, який потрібно видалити.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – ID користувача, якому належить контакт.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Видалений об’єкт контакту, якщо знайдено, інакше None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#src.models.Contact" title="src.models.Contact">models.Contact</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.get_contact">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">get_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#get_contact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.get_contact" title="Link to this definition"></a></dt>
+<dd><p>Отримує конкретний контакт за ID для вказаного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>contact_id</strong> (<em>int</em>) – ID контакту, який потрібно отримати.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – ID користувача, якому належить контакт.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Об’єкт контакту, якщо знайдено, інакше None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#src.models.Contact" title="src.models.Contact">models.Contact</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.get_contacts">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">get_contacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#get_contacts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.get_contacts" title="Link to this definition"></a></dt>
+<dd><p>Отримує список контактів з пагінацією, опціонально фільтруючи за користувачем.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em><em> | </em><em>None</em>) – ID користувача, контакти якого потрібно отримати. Якщо None, повертає всі контакти.</p></li>
+<li><p><strong>skip</strong> (<em>int</em>) – Кількість записів для пропуску (для пагінації).</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – Максимальна кількість записів для повернення (для пагінації).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Список об’єктів контактів.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.models.Contact" title="src.models.Contact">models.Contact</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.get_user_by_email">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">get_user_by_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#get_user_by_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.get_user_by_email" title="Link to this definition"></a></dt>
+<dd><p>Отримує користувача за email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>email</strong> (<em>str</em>) – Електронна пошта користувача.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Об’єкт користувача, якщо знайдено, інакше None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#src.models.User" title="src.models.User">models.User</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.search_contacts">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">search_contacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#search_contacts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.search_contacts" title="Link to this definition"></a></dt>
+<dd><p>Шукає контакти за ім’ям, прізвищем або email для вказаного користувача.
+Пошук нечутливий до регістру.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – Рядок для пошуку.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – ID користувача, контакти якого потрібно шукати.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Список знайдених об’єктів контактів.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.models.Contact" title="src.models.Contact">models.Contact</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.upcoming_birthdays">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">upcoming_birthdays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#upcoming_birthdays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.upcoming_birthdays" title="Link to this definition"></a></dt>
+<dd><p>Отримує список контактів з днями народження, що наближаються (наступні 7 днів) для вказаного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – ID користувача, контакти якого потрібно перевірити.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Список об’єктів контактів з майбутніми днями народження.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.models.Contact" title="src.models.Contact">models.Contact</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.update_contact">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">update_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#update_contact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.update_contact" title="Link to this definition"></a></dt>
+<dd><p>Оновлює існуючий контакт для вказаного користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>contact_id</strong> (<em>int</em>) – ID контакту, який потрібно оновити.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – ID користувача, якому належить контакт.</p></li>
+<li><p><strong>contact</strong> (<a class="reference internal" href="#src.schemas.ContactUpdate" title="src.schemas.ContactUpdate"><em>schemas.ContactUpdate</em></a>) – Схема даних з оновленою інформацією про контакт.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Оновлений об’єкт контакту, якщо знайдено, інакше None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#src.models.Contact" title="src.models.Contact">models.Contact</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.update_user_avatar">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">update_user_avatar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avatar_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#update_user_avatar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.update_user_avatar" title="Link to this definition"></a></dt>
+<dd><p>Оновлює URL аватара користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – ID користувача, аватар якого потрібно оновити.</p></li>
+<li><p><strong>avatar_url</strong> (<em>str</em>) – Новий URL аватара.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Оновлений об’єкт користувача, якщо знайдено, інакше None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#src.models.User" title="src.models.User">models.User</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.crud.update_user_confirmation">
+<span class="sig-prename descclassname"><span class="pre">src.crud.</span></span><span class="sig-name descname"><span class="pre">update_user_confirmation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confirmed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/crud.html#update_user_confirmation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.crud.update_user_confirmation" title="Link to this definition"></a></dt>
+<dd><p>Оновлює статус підтвердження email користувача.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>Session</em>) – Сесія бази даних.</p></li>
+<li><p><strong>user</strong> (<a class="reference internal" href="#src.models.User" title="src.models.User"><em>models.User</em></a>) – Об’єкт користувача для оновлення.</p></li>
+<li><p><strong>confirmed</strong> (<em>bool</em>) – Новий статус підтвердження (True/False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Оновлений об’єкт користувача.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.models.User" title="src.models.User">models.User</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.database">
+<span id="database-utilities"></span><h2>Database Utilities<a class="headerlink" href="#module-src.database" title="Link to this heading"></a></h2>
+<p>Модуль для налаштування підключення до бази даних SQLAlchemy.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.database.create_db_and_tables">
+<span class="sig-prename descclassname"><span class="pre">src.database.</span></span><span class="sig-name descname"><span class="pre">create_db_and_tables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database.html#create_db_and_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.database.create_db_and_tables" title="Link to this definition"></a></dt>
+<dd><p>Створює всі таблиці в базі даних, визначені через Base.metadata.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.database.get_db">
+<span class="sig-prename descclassname"><span class="pre">src.database.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.database.get_db" title="Link to this definition"></a></dt>
+<dd><p>Dependency для отримання сесії бази даних.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Session</em> – Сесія бази даних.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.deps">
+<span id="dependencies"></span><h2>Dependencies<a class="headerlink" href="#module-src.deps" title="Link to this heading"></a></h2>
+<p>Модуль для управління залежностями, такими як сесія бази даних.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.deps.get_db">
+<span class="sig-prename descclassname"><span class="pre">src.deps.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/deps.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.deps.get_db" title="Link to this definition"></a></dt>
+<dd><p>Dependency для отримання сесії бази даних.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Session</em> – Сесія бази даних.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.email_utils">
+<span id="email-utilities"></span><h2>Email Utilities<a class="headerlink" href="#module-src.email_utils" title="Link to this heading"></a></h2>
+<p>Модуль для відправки електронних листів у застосунку.</p>
+<p>Включає конфігурацію для FastMail та функцію для відправки листів
+для підтвердження email або скидання пароля.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.email_utils.send_email">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.email_utils.</span></span><span class="sig-name descname"><span class="pre">send_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Confirm</span> <span class="pre">your</span> <span class="pre">email</span> <span class="pre">for</span> <span class="pre">Contacts</span> <span class="pre">App'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/email_utils.html#send_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.email_utils.send_email" title="Link to this definition"></a></dt>
+<dd><p>Відправляє електронний лист для підтвердження email або скидання пароля.
+Виводить посилання в логи перед відправкою листа.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>EmailStr</em>) – Адреса електронної пошти одержувача.</p></li>
+<li><p><strong>username</strong> (<em>str</em>) – Ім’я користувача (зазвичай, також email).</p></li>
+<li><p><strong>host</strong> (<em>str</em>) – Базовий URL застосунку.</p></li>
+<li><p><strong>token</strong> (<em>str</em>) – Токен верифікації або скидання пароля.</p></li>
+<li><p><strong>subject</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Тема електронного листа. За замовчуванням “Confirm your email for Contacts App”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.models">
+<span id="models"></span><h2>Models<a class="headerlink" href="#module-src.models" title="Link to this heading"></a></h2>
+<p>Модуль, що визначає моделі SQLAlchemy для Contacts App,
+включаючи моделі User та Contact.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.models.Contact">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.models.</span></span><span class="sig-name descname"><span class="pre">Contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/models.html#Contact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.models.Contact" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">declarative_base</span></code></p>
+<p>Модель контакту.</p>
+<dl class="simple">
+<dt>Атрибути:</dt><dd><p>id (int): Унікальний ідентифікатор контакту.
+first_name (str): Ім’я контакту.
+last_name (str): Прізвище контакту.
+email (str): Електронна пошта контакту (унікальна для користувача).
+phone (str): Номер телефону контакту.
+birthday (Date): Дата народження контакту.
+additional_info (str): Додаткова інформація про контакт.
+user_id (int): Ідентифікатор користувача-власника контакту (зовнішній ключ).
+created_at (datetime): Час створення контакту.
+updated_at (datetime): Час останнього оновлення контакту.
+owner (relationship): Зв’язок з користувачем-власником.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.models.Contact.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'User'</span></em><a class="headerlink" href="#src.models.Contact.owner" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.models.User">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/models.html#User"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.models.User" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">declarative_base</span></code></p>
+<p>Модель користувача.</p>
+<dl class="simple">
+<dt>Атрибути:</dt><dd><p>id (int): Унікальний ідентифікатор користувача.
+email (str): Електронна пошта користувача (унікальна).
+hashed_password (str): Хешований пароль користувача.
+confirmed (bool): Статус підтвердження електронної пошти.
+created_at (datetime): Час створення облікового запису.
+updated_at (datetime): Час останнього оновлення облікового запису.
+avatar_url (str): URL аватара користувача (для Cloudinary).
+role (UserRole): Роль користувача (user або admin).
+contacts (relationship): Зв’язок з контактами, що належать цьому користувачу.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.models.User.contacts">
+<span class="sig-name descname"><span class="pre">contacts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contact'</span></em><a class="headerlink" href="#src.models.User.contacts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.models.UserRole">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.models.</span></span><span class="sig-name descname"><span class="pre">UserRole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/models.html#UserRole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.models.UserRole" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.models.UserRole.admin">
+<span class="sig-name descname"><span class="pre">admin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'admin'</span></em><a class="headerlink" href="#src.models.UserRole.admin" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.models.UserRole.user">
+<span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'user'</span></em><a class="headerlink" href="#src.models.UserRole.user" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-src.schemas">
+<span id="schemas"></span><h2>Schemas<a class="headerlink" href="#module-src.schemas" title="Link to this heading"></a></h2>
+<p>Модуль, що визначає схеми даних (Pydantic моделі)
+для валідації вхідних та вихідних даних API.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.ContactBase">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">ContactBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#ContactBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.ContactBase" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Базова схема для контакту, містить спільні поля для створення та оновлення.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactBase.additional_info">
+<span class="sig-name descname"><span class="pre">additional_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.schemas.ContactBase.additional_info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactBase.birthday">
+<span class="sig-name descname"><span class="pre">birthday</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code></em><a class="headerlink" href="#src.schemas.ContactBase.birthday" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactBase.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">EmailStr</span></code></em><a class="headerlink" href="#src.schemas.ContactBase.email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactBase.first_name">
+<span class="sig-name descname"><span class="pre">first_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#src.schemas.ContactBase.first_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactBase.last_name">
+<span class="sig-name descname"><span class="pre">last_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#src.schemas.ContactBase.last_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactBase.phone">
+<span class="sig-name descname"><span class="pre">phone</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#src.schemas.ContactBase.phone" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.ContactCreate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">ContactCreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#ContactCreate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.ContactCreate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.schemas.ContactBase" title="src.schemas.ContactBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContactBase</span></code></a></p>
+<p>Схема для створення нового контакту. Успадковує поля з ContactBase.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.ContactOut">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">ContactOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#ContactOut"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.ContactOut" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.schemas.ContactBase" title="src.schemas.ContactBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContactBase</span></code></a></p>
+<p>Схема для виведення інформації про контакт.
+Включає ID та таймстемпи створення/оновлення.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.ContactOut.Config">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="_modules/src/schemas.html#ContactOut.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.ContactOut.Config" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactOut.Config.from_attributes">
+<span class="sig-name descname"><span class="pre">from_attributes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#src.schemas.ContactOut.Config.from_attributes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactOut.Config.json_encoders">
+<span class="sig-name descname"><span class="pre">json_encoders</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'datetime.date'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">ContactOut.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'datetime.datetime'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">ContactOut.Config.&lt;lambda&gt;&gt;}</span></em><a class="headerlink" href="#src.schemas.ContactOut.Config.json_encoders" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactOut.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code><span class="pre">]</span></em><a class="headerlink" href="#src.schemas.ContactOut.created_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactOut.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#src.schemas.ContactOut.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactOut.updated_at">
+<span class="sig-name descname"><span class="pre">updated_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code><span class="pre">]</span></em><a class="headerlink" href="#src.schemas.ContactOut.updated_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.ContactUpdate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">ContactUpdate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#ContactUpdate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.ContactUpdate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Схема для оновлення існуючого контакту. Всі поля є опціональними.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactUpdate.additional_info">
+<span class="sig-name descname"><span class="pre">additional_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.schemas.ContactUpdate.additional_info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactUpdate.birthday">
+<span class="sig-name descname"><span class="pre">birthday</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.schemas.ContactUpdate.birthday" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactUpdate.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">EmailStr</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.schemas.ContactUpdate.email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactUpdate.first_name">
+<span class="sig-name descname"><span class="pre">first_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.schemas.ContactUpdate.first_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactUpdate.last_name">
+<span class="sig-name descname"><span class="pre">last_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.schemas.ContactUpdate.last_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.ContactUpdate.phone">
+<span class="sig-name descname"><span class="pre">phone</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.schemas.ContactUpdate.phone" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.PasswordResetRequest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">PasswordResetRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#PasswordResetRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.PasswordResetRequest" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Схема для запиту скидання пароля, що містить email та новий пароль.
+Ця схема, схоже, використовується не для ініціації скидання (там RequestEmail),
+а для безпосереднього оновлення пароля після переходу за посиланням з токеном.
+(Залишено як є з вашого файлу, хоча назва може бути дещо заплутана без контексту маршруту).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.PasswordResetRequest.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">EmailStr</span></code></em><a class="headerlink" href="#src.schemas.PasswordResetRequest.email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.RequestEmail">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">RequestEmail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#RequestEmail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.RequestEmail" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Схема для запиту, що містить лише email (наприклад, для скидання пароля або повторного підтвердження).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.RequestEmail.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">EmailStr</span></code></em><a class="headerlink" href="#src.schemas.RequestEmail.email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.Token">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">Token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#Token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.Token" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Схема для повернення JWT токену доступу.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.Token.access_token">
+<span class="sig-name descname"><span class="pre">access_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#src.schemas.Token.access_token" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.Token.token_type">
+<span class="sig-name descname"><span class="pre">token_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#src.schemas.Token.token_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.UserBase">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">UserBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#UserBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.UserBase" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Базова схема для користувача, містить лише email.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserBase.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">EmailStr</span></code></em><a class="headerlink" href="#src.schemas.UserBase.email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.UserCreate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">UserCreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#UserCreate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.UserCreate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.schemas.UserBase" title="src.schemas.UserBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserBase</span></code></a></p>
+<p>Схема для створення нового користувача.
+Включає email та пароль.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.UserLogin">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">UserLogin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#UserLogin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.UserLogin" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.schemas.UserBase" title="src.schemas.UserBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserBase</span></code></a></p>
+<p>Схема для входу користувача.
+Включає email та пароль.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.UserOut">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schemas.</span></span><span class="sig-name descname"><span class="pre">UserOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schemas.html#UserOut"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.UserOut" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.schemas.UserBase" title="src.schemas.UserBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserBase</span></code></a></p>
+<p>Схема для виведення інформації про користувача.
+Включає ID, статус підтвердження, таймстемпи, роль та URL аватара.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schemas.UserOut.Config">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="_modules/src/schemas.html#UserOut.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schemas.UserOut.Config" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserOut.Config.from_attributes">
+<span class="sig-name descname"><span class="pre">from_attributes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#src.schemas.UserOut.Config.from_attributes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserOut.Config.json_encoders">
+<span class="sig-name descname"><span class="pre">json_encoders</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'datetime.date'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">UserOut.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'datetime.datetime'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">UserOut.Config.&lt;lambda&gt;&gt;}</span></em><a class="headerlink" href="#src.schemas.UserOut.Config.json_encoders" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserOut.avatar_url">
+<span class="sig-name descname"><span class="pre">avatar_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.schemas.UserOut.avatar_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserOut.confirmed">
+<span class="sig-name descname"><span class="pre">confirmed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><a class="headerlink" href="#src.schemas.UserOut.confirmed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserOut.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code><span class="pre">]</span></em><a class="headerlink" href="#src.schemas.UserOut.created_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserOut.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#src.schemas.UserOut.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserOut.role">
+<span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#src.models.UserRole" title="src.models.UserRole"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserRole</span></code></a></em><a class="headerlink" href="#src.schemas.UserOut.role" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schemas.UserOut.updated_at">
+<span class="sig-name descname"><span class="pre">updated_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code><span class="pre">]</span></em><a class="headerlink" href="#src.schemas.UserOut.updated_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 

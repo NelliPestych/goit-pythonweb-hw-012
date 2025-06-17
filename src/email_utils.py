@@ -26,7 +26,7 @@ conf = ConnectionConfig(
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=True,
     TEMPLATE_FOLDER=Path(__file__).parent / 'templates',
-    SUPPRESS_SEND=TESTING # <--- ДОДАНО/ЗМІНЕНО: Відключаємо відправку листів для тестів
+    SUPPRESS_SEND=TESTING # <--- Відключаємо відправку листів для тестів
 )
 
 async def send_email(
@@ -66,10 +66,5 @@ async def send_email(
 
     except Exception as e:
         print(f"ERROR: Failed to send email to {email} with subject '{subject}': {e}")
-        # НЕ викликаємо HTTPException тут у тестовому середовищі, оскільки це порушить тести,
-        # які очікують успішного створення користувача, незважаючи на спробу відправки листа.
-        # HTTPException (500) буде піднято, якщо ми не заглушимо відправку FastMail.
-        # Raise HTTPException тільки якщо дійсно потрібно повідомити клієнту про помилку,
-        # але не в контексті мокування.
-        if not TESTING: # Тільки якщо не в тестовому режимі, піднімаємо HTTP виняток
+        if not TESTING:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to send email: {e}")

@@ -1,4 +1,3 @@
-# src/main.py
 """
 Головний файл застосунку Contacts App API.
 
@@ -14,10 +13,8 @@ from fastapi_limiter import FastAPILimiter
 from redis.asyncio import Redis
 from dotenv import load_dotenv
 import os
-# ВИДАЛЕНО: import time - більше не потрібен через видалення retry-логіки для БД
-# ВИДАЛЕНО: імпорти для створення таблиць та OperationalError, оскільки це обробляється db-init
 
-from src.routers import contacts, auth_routes, users # Перевірено: використовує auth_routes
+from src.routers import contacts, auth_routes, users
 from src.database import SessionLocal # SessionLocal все ще потрібен для залежностей
 from fastapi.middleware.cors import CORSMiddleware
 

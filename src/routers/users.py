@@ -65,6 +65,7 @@ async def update_avatar(
 
     Raises:
         HTTPException:
+            - 422 UNPROCESSABLE_ENTITY: Якщо файл аватара не надано.
             - 403 FORBIDDEN: Якщо користувач не є адміністратором (обробляється залежністю).
             - 404 NOT_FOUND: Якщо користувача не знайдено в базі даних.
             - 500 INTERNAL_SERVER_ERROR: Якщо сталася помилка під час завантаження на Cloudinary
@@ -99,4 +100,13 @@ async def update_avatar(
 
 @router.patch("/admin_only")
 async def admin_only_endpoint(current_user: models.User = Depends(get_current_admin_user)):
+    """
+    Приклад ендпоінту, доступного лише адміністраторам.
+
+    Args:
+        current_user (models.User): Поточний аутентифікований користувач (гарантовано адміністратор).
+
+    Returns:
+        dict: Повідомлення про успішний доступ.
+    """
     return {"message": "You are an admin"}

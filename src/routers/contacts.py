@@ -147,7 +147,7 @@ def delete_contact(
         HTTPException: 404 NOT_FOUND, якщо контакт не знайдено.
 
     Returns:
-        None
+        dict: Повідомлення про успішне видалення контакту.
     """
     db_contact = crud.delete_contact(db, contact_id, user_id=current_user.id)
     if db_contact is None:

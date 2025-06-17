@@ -13,6 +13,10 @@ from src import auth as auth_utils
 
 # --- Допоміжні функції для тестів ---
 def create_test_user_and_get_token(client: TestClient, db_session: Session, email: str, password: str, is_admin: bool = False):
+    """
+    Створює тестового користувача, підтверджує його та повертає access_token.
+    Може створювати адміністратора, якщо is_admin=True.
+    """
     user_data = schemas.UserCreate(email=email, password=password)
     user = crud.create_user(db_session, user_data)
     crud.update_user_confirmation(db_session, user, True)
@@ -30,6 +34,9 @@ def create_test_user_and_get_token(client: TestClient, db_session: Session, emai
 # --- Тести ---
 
 def test_read_users_me_success(client: TestClient, db_session: Session):
+    """
+    Тестує успішне отримання інформації про поточного користувача.
+    """
     user, token = create_test_user_and_get_token(client, db_session, "me@example.com", "MySecretPass123")
     response = client.get("/api/users/current_user", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
@@ -41,16 +48,25 @@ def test_read_users_me_success(client: TestClient, db_session: Session):
     assert "avatar_url" in data
 
 def test_read_users_me_unauthenticated(client: TestClient):
+    """
+    Тестує спробу отримати інформацію про поточного користувача без аутентифікації.
+    """
     response = client.get("/api/users/current_user")
     assert response.status_code == 401
     assert response.json()["detail"] == "Not authenticated"
 
 def test_read_users_me_invalid_token(client: TestClient):
+    """
+    Тестує спробу отримати інформацію про поточного користувача з недійсним токеном.
+    """
     response = client.get("/api/users/current_user", headers={"Authorization": "Bearer invalid_token"})
     assert response.status_code == 401
     assert response.json()["detail"] == "Could not validate credentials"
 
 def test_read_users_me_unconfirmed_email(client: TestClient, db_session: Session):
+    """
+    Тестує спробу входу користувача з непідтвердженим email.
+    """
     email = "unconfirmed_me@example.com"
     password = "UnconfirmedPass"
     user_data = schemas.UserCreate(email=email, password=password)
@@ -60,6 +76,10 @@ def test_read_users_me_unconfirmed_email(client: TestClient, db_session: Session
     assert login_response.json()["detail"] == "Email not confirmed"
 
 def test_update_avatar_success(client: TestClient, db_session: Session):
+    """
+    Тестує успішне завантаження та оновлення аватара користувача.
+    Мокує Cloudinary uploader.
+    """
     user, token = create_test_user_and_get_token(
         client, db_session, "avatar_success@example.com", "TestPass123", is_admin=True
     )
@@ -74,6 +94,9 @@ def test_update_avatar_success(client: TestClient, db_session: Session):
     assert response.status_code == 200
 
 def test_update_avatar_no_file(client: TestClient, db_session: Session):
+    """
+    Тестує спробу оновити аватар без файлу.
+    """
     user_data = schemas.UserCreate(email="avatar_no_file@example.com", password="TestPass123")
     user = crud.create_user(db_session, user_data)
     user.role = UserRole.admin
@@ -92,6 +115,9 @@ def test_update_avatar_no_file(client: TestClient, db_session: Session):
     assert response.json()["detail"] == "Avatar file is required."
 
 def test_update_avatar_cloudinary_error(client: TestClient, db_session: Session, monkeypatch):
+    """
+    Тестує обробку помилок Cloudinary під час завантаження аватара.
+    """
     user_data = schemas.UserCreate(email="avatar_cloudinary_fail@example.com", password="TestPass123")
     user = crud.create_user(db_session, user_data)
     user.role = UserRole.admin
@@ -115,6 +141,10 @@ def test_update_avatar_cloudinary_error(client: TestClient, db_session: Session,
     assert response.status_code == 500
 
 def test_get_current_admin_user_forbidden(client: TestClient, db_session: Session):
+    """
+    Тестує, що звичайний користувач не може отримати доступ до маршруту,
+    доступного лише адміністраторам.
+    """
     user_data = schemas.UserCreate(email="not_admin@example.com", password="TestPass123")
     user = crud.create_user(db_session, user_data)
     crud.update_user_confirmation(db_session, user, True)

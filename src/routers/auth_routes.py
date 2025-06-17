@@ -41,6 +41,7 @@ async def signup(body: schemas.UserCreate, background_tasks: BackgroundTasks, re
     Raises:
         HTTPException:
             - 409 CONFLICT: Якщо користувач з таким email вже існує.
+            - 500 INTERNAL_SERVER_ERROR: Якщо не вдалося створити користувача.
 
     Returns:
         schemas.UserOut: Створений об'єкт користувача (без хешованого пароля).
@@ -87,7 +88,7 @@ async def confirm_email(token: str, db: Session = Depends(deps.get_db)):
             - 404 NOT_FOUND: Якщо користувача з таким email не знайдено.
 
     Returns:
-        dict: Повідомлення про успішне підтвердження електронної пошти.
+        dict: Повідомлення про успішне підтвердження електронної пошти або про вже підтверджену пошту.
     """
     email = decode_email_verification_token(token)
     user = crud.get_user_by_email(db, email)
@@ -189,7 +190,7 @@ async def request_reset_password(
     Raises:
         HTTPException:
             - 404 NOT_FOUND: Якщо користувача з таким email не знайдено.
-            - 400 BAD_REQUEST: Якщо email не підтверджений (щоб уникнути спаму).
+            - 403 FORBIDDEN: Якщо email не підтверджений (щоб уникнути спаму).
 
     Returns:
         dict: Повідомлення про успішне відправлення листа.
@@ -238,7 +239,7 @@ async def reset_password(
     Raises:
         HTTPException:
             - 400 BAD_REQUEST: Якщо токен недійсний або термін його дії минув,
-                                або email у токені не збігається з наданим.
+                               або email у токені не збігається з наданим.
             - 404 NOT_FOUND: Якщо користувача з таким email не знайдено.
 
     Returns:
@@ -273,6 +274,20 @@ async def request_email_confirmation(
 ):
     """
     Повторно надсилає лист для підтвердження електронної пошти.
+
+    Args:
+        body (schemas.RequestEmail): Об'єкт, що містить email користувача.
+        background_tasks (BackgroundTasks): Завдання для фонової відправки email.
+        request (Request): Об'єкт запиту для формування посилання.
+        db (Session): Сесія бази даних.
+
+    Raises:
+        HTTPException:
+            - 404 NOT_FOUND: Якщо користувача з таким email не знайдено.
+            - 409 CONFLICT: Якщо email вже підтверджений.
+
+    Returns:
+        dict: Повідомлення про успішне відправлення листа підтвердження.
     """
     user = crud.get_user_by_email(db, body.email)
     if user is None:

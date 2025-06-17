@@ -1,9 +1,17 @@
+"""
+Модуль, що визначає схеми даних (Pydantic моделі)
+для валідації вхідних та вихідних даних API.
+"""
+
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date, datetime
 from typing import Optional
 from src.models import UserRole
 
 class ContactBase(BaseModel):
+    """
+    Базова схема для контакту, містить спільні поля для створення та оновлення.
+    """
     first_name: str
     last_name: str
     email: EmailStr
@@ -12,9 +20,15 @@ class ContactBase(BaseModel):
     additional_info: Optional[str] = None
 
 class ContactCreate(ContactBase):
+    """
+    Схема для створення нового контакту. Успадковує поля з ContactBase.
+    """
     pass
 
 class ContactUpdate(BaseModel):
+    """
+    Схема для оновлення існуючого контакту. Всі поля є опціональними.
+    """
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -24,6 +38,10 @@ class ContactUpdate(BaseModel):
 
 
 class ContactOut(ContactBase):
+    """
+    Схема для виведення інформації про контакт.
+    Включає ID та таймстемпи створення/оновлення.
+    """
     id: int
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
@@ -36,27 +54,46 @@ class ContactOut(ContactBase):
         }
 
 class UserBase(BaseModel):
+    """
+    Базова схема для користувача, містить лише email.
+    """
     email: EmailStr
 
 class UserCreate(UserBase):
-    password: str = Field(min_length=6) # ДОДАНО: Валідація мінімальної довжини пароля
+    """
+    Схема для створення нового користувача.
+    Включає email та пароль.
+    """
+    password: str = Field(min_length=6) # Валідація мінімальної довжини пароля
 
 class UserLogin(UserBase):
-    password: str = Field(min_length=6) # ДОДАНО: Валідація мінімальної довжини пароля
+    """
+    Схема для входу користувача.
+    Включає email та пароль.
+    """
+    password: str = Field(min_length=6) # Валідація мінімальної довжини пароля
 
-# ДОДАНО: Нова схема для запиту скидання пароля, яка містить email та новий пароль
 class PasswordResetRequest(BaseModel):
+    """
+    Схема для запиту скидання пароля, що містить email та новий пароль.
+    Ця схема, схоже, використовується не для ініціації скидання (там RequestEmail),
+    а для безпосереднього оновлення пароля після переходу за посиланням з токеном.
+    (Залишено як є з вашого файлу, хоча назва може бути дещо заплутана без контексту маршруту).
+    """
     email: EmailStr
     password: str = Field(min_length=6) # Це буде новий пароль
 
-
 class UserOut(UserBase):
+    """
+    Схема для виведення інформації про користувача.
+    Включає ID, статус підтвердження, таймстемпи, роль та URL аватара.
+    """
     id: int
     confirmed: bool
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     role: UserRole
-    avatar_url: Optional[str] = None # ДОДАНО: Аватар URL для виведення
+    avatar_url: Optional[str] = None # Аватар URL для виведення
 
     class Config:
         from_attributes = True
@@ -66,8 +103,14 @@ class UserOut(UserBase):
         }
 
 class Token(BaseModel):
+    """
+    Схема для повернення JWT токену доступу.
+    """
     access_token: str
     token_type: str
 
 class RequestEmail(BaseModel):
+    """
+    Схема для запиту, що містить лише email (наприклад, для скидання пароля або повторного підтвердження).
+    """
     email: EmailStr

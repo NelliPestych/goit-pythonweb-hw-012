@@ -1,4 +1,3 @@
-# conftest.py
 """
 Модуль для фікстур Pytest, що налаштовує тестове середовище.
 
@@ -47,9 +46,9 @@ def db_engine():
 @pytest.fixture(scope="function")
 def db_session(db_engine):
     """
-    Фікстура, що надає тестову сесію бази даних для кожного тесту.
+    Фікстура, що надає незалежну сесію бази даних для кожного тесту.
 
-    Відкочує всі зміни після завершення кожного тесту.
+    Використовує транзакції для забезпечення ізоляції тестів та відкату змін.
     """
     connection = db_engine.connect()
     transaction = connection.begin()
@@ -96,8 +95,7 @@ def mock_send_email():
     Фікстура, що мокує функцію `send_email` у модулі `src.email_utils`.
 
     Використовує `AsyncMock` для імітації асинхронної поведінки
-    та `patch` для заміни реальної функції.
-    `autouse=True` означає, що ця фікстура буде автоматично застосовуватися до всіх тестів.
+    та `patch` для заміни оригінальної функції.
     """
     with patch("src.email_utils.send_email", new_callable=AsyncMock) as mock_email:
         yield mock_email
